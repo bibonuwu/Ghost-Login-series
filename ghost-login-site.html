@@ -1,0 +1,3021 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHOST LOGIN — Сезон 1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg-dark: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a28;
+    --accent: #00ff88;
+    --accent-dim: #00cc6a;
+    --accent-glow: rgba(0, 255, 136, 0.15);
+    --red: #ff3355;
+    --red-glow: rgba(255, 51, 85, 0.15);
+    --blue: #3388ff;
+    --blue-glow: rgba(51, 136, 255, 0.15);
+    --purple: #aa55ff;
+    --purple-glow: rgba(170, 85, 255, 0.15);
+    --yellow: #ffcc00;
+    --yellow-glow: rgba(255, 204, 0, 0.15);
+    --text: #e0e0e8;
+    --text-dim: #8888a0;
+    --text-bright: #ffffff;
+    --border: #2a2a3a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Scanline effect */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== HEADER / HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0,255,136,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(255,51,85,0.05) 0%, transparent 50%);
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  .glitch-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    position: relative;
+    animation: glitch-skew 4s infinite linear alternate-reverse;
+  }
+
+  .glitch-title::before,
+  .glitch-title::after {
+    content: 'GHOST LOGIN';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  .glitch-title::before {
+    color: var(--accent);
+    animation: glitch-1 3s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  }
+
+  .glitch-title::after {
+    color: var(--red);
+    animation: glitch-2 2s infinite linear alternate-reverse;
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+  }
+
+  @keyframes glitch-1 {
+    0%, 90% { transform: translate(0); }
+    91% { transform: translate(-2px, 1px); }
+    93% { transform: translate(2px, -1px); }
+    95% { transform: translate(-1px, 2px); }
+    97% { transform: translate(1px, -2px); }
+    100% { transform: translate(0); }
+  }
+
+  @keyframes glitch-2 {
+    0%, 88% { transform: translate(0); }
+    89% { transform: translate(2px, -1px); }
+    92% { transform: translate(-2px, 1px); }
+    96% { transform: translate(1px, 2px); }
+    100% { transform: translate(0); }
+  }
+
+  @keyframes glitch-skew {
+    0%, 95% { transform: skew(0deg); }
+    96% { transform: skew(0.5deg); }
+    98% { transform: skew(-0.3deg); }
+    100% { transform: skew(0deg); }
+  }
+
+  .hero-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-top: 16px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .hero-desc {
+    max-width: 650px;
+    margin: 32px auto 0;
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .hero-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 48px;
+    padding: 18px 56px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--bg-dark);
+    background: var(--accent);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+    box-shadow: 0 0 40px var(--accent-glow), 0 4px 20px rgba(0,0,0,0.4);
+    z-index: 2;
+  }
+  .hero-start-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 60px rgba(0,255,136,0.35), 0 8px 30px rgba(0,0,0,0.5);
+    background: var(--accent-dim);
+  }
+  .hero-start-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+  }
+
+  /* ===== MAIN CONTENT AREA ===== */
+  .main-content {
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .content-nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+
+  .content-nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .content-nav-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .nav-logo-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px 8px 0;
+    border-right: 1px solid var(--border);
+    margin-right: 4px;
+  }
+
+  .about-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-glow);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .about-btn:hover, .about-btn.active {
+    background: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .extra-nav-btns {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .extra-nav-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .extra-nav-btn:hover, .extra-nav-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .extra-nav-btn.primary {
+    background: var(--accent);
+    color: var(--bg-dark);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+  .extra-nav-btn.primary:hover {
+    background: var(--accent-dim);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  /* ===== SERIES SLIDER ===== */
+  .series-slider-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .slider-arrow {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .slider-arrow:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  .slider-track {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    flex: 1;
+    padding: 4px 0;
+  }
+  .slider-track::-webkit-scrollbar { display: none; }
+
+  .series-slide-btn {
+    flex-shrink: 0;
+    min-width: 180px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: all 0.4s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .series-slide-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .series-slide-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .series-slide-btn.active::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 20px; right: 20px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 3px 3px 0 0;
+  }
+
+  .slide-ep-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+  .slide-ep-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+  .series-slide-btn.active .slide-ep-title {
+    color: var(--accent);
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .scroll-indicator::after {
+    content: '\\2193';
+    display: block;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 4px;
+    color: var(--accent);
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  /* ===== NAVIGATION ===== */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-inner::-webkit-scrollbar { display: none; }
+
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+    white-space: nowrap;
+    padding: 16px 16px 16px 0;
+    border-right: 1px solid var(--border);
+    margin-right: 8px;
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 16px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s;
+    position: relative;
+    letter-spacing: 1px;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    color: var(--accent);
+  }
+
+  .nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 16px; right: 16px;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  /* Primary nav button (Tracker) */
+  .nav-btn-primary {
+    background: var(--accent) !important;
+    color: var(--bg-dark) !important;
+    font-weight: 700 !important;
+    border-radius: 8px;
+    margin-right: 8px;
+    padding: 8px 18px !important;
+    font-size: 0.82rem !important;
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 16px var(--accent-glow);
+    transition: all 0.3s;
+    position: relative;
+  }
+  .nav-btn-primary:hover {
+    background: var(--accent-dim) !important;
+    box-shadow: 0 0 24px rgba(0,255,136,0.35);
+    transform: scale(1.05);
+  }
+  .nav-btn-primary.active {
+    background: var(--accent) !important;
+    color: var(--bg-dark) !important;
+  }
+  .nav-btn-primary.active::after {
+    background: var(--bg-dark);
+    left: 18px; right: 18px;
+  }
+
+  /* ===== CHARACTERS ===== */
+  .characters-section {
+    padding: 100px 0;
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-title::before {
+    content: '>';
+    color: var(--accent);
+    animation: blink 1s infinite;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .char-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .char-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+
+  .char-card:hover::before { transform: scaleX(1); }
+  .char-card:hover { border-color: var(--accent); background: var(--bg-card-hover); transform: translateY(-4px); }
+
+  .char-card.red-accent:hover { border-color: var(--red); }
+  .char-card.red-accent::before { background: var(--red); }
+  .char-card.blue-accent:hover { border-color: var(--blue); }
+  .char-card.blue-accent::before { background: var(--blue); }
+  .char-card.purple-accent:hover { border-color: var(--purple); }
+  .char-card.purple-accent::before { background: var(--purple); }
+
+  .char-icon {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .char-icon.green { background: var(--accent-glow); }
+  .char-icon.red { background: var(--red-glow); }
+  .char-icon.blue { background: var(--blue-glow); }
+  .char-icon.purple { background: var(--purple-glow); }
+
+  .char-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .char-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .char-role.red { color: var(--red); }
+  .char-role.blue { color: var(--blue); }
+  .char-role.purple { color: var(--purple); }
+
+  .char-desc {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ===== EPISODE SECTIONS ===== */
+  .episode-section {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .episode-section.active { display: block; }
+
+  .ep-header {
+    margin-bottom: 48px;
+  }
+
+  .ep-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ep-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .ep-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .ep-meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ep-meta-item .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .ep-mission {
+    background: var(--accent-glow);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+
+  .ep-mission-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ep-mission-text {
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Timeline blocks */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--blue), var(--red), var(--purple));
+    border-radius: 2px;
+  }
+
+  .timeline-block {
+    position: relative;
+    margin-bottom: 40px;
+    padding: 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+  }
+
+  .timeline-block:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+    box-shadow: -4px 0 20px var(--accent-glow);
+  }
+
+  .timeline-block::before {
+    content: '';
+    position: absolute;
+    left: -36px;
+    top: 32px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--bg-dark);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .timeline-block.red-block::before { border-color: var(--red); box-shadow: 0 0 10px var(--red-glow); }
+  .timeline-block.purple-block::before { border-color: var(--purple); box-shadow: 0 0 10px var(--purple-glow); }
+
+  .tl-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .tl-time.red { color: var(--red); }
+  .tl-time.purple { color: var(--purple); }
+
+  .tl-phase {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 16px;
+  }
+
+  .tl-content {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .tl-content p {
+    margin-bottom: 12px;
+  }
+
+  .tl-content .scene-note {
+    background: rgba(0,255,136,0.05);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .tl-content .scene-note.danger {
+    background: rgba(255,51,85,0.05);
+    border-left-color: var(--red);
+  }
+
+  .tl-content .dialogue {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(170,85,255,0.08);
+    border: 1px solid rgba(170,85,255,0.15);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: var(--purple);
+  }
+
+  .tl-content .dialogue .speaker {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  /* Shooting Days */
+  .shooting-days {
+    margin-top: 48px;
+  }
+
+  .shooting-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .shooting-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255,204,0,0.3), transparent);
+  }
+
+  .day-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .day-card:hover { border-color: var(--yellow); }
+
+  .day-header {
+    padding: 16px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+  }
+
+  .day-header:hover { background: var(--bg-card-hover); }
+
+  .day-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .day-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--yellow);
+    background: var(--yellow-glow);
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+  }
+
+  .day-name {
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .day-toggle {
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+  }
+
+  .day-card.open .day-toggle { transform: rotate(180deg); }
+
+  .day-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    padding: 0 24px;
+  }
+
+  .day-card.open .day-body {
+    max-height: 2000px;
+    padding: 0 24px 24px;
+  }
+
+  .day-detail {
+    margin-bottom: 16px;
+  }
+
+  .day-detail-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .day-detail-text {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ===== OVERVIEW TAB ===== */
+  .overview-section { padding: 80px 0; }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  .overview-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .overview-card::after {
+    content: 'ОТКРЫТЬ →';
+    position: absolute;
+    bottom: 20px; right: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .overview-card:hover::after { opacity: 1; }
+  .overview-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 30px var(--accent-glow); }
+
+  .ov-ep-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .ov-ep-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .ov-ep-desc {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .ov-days {
+    display: flex;
+    gap: 6px;
+  }
+
+  .ov-day-dot {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: rgba(255,204,0,0.1);
+    border: 1px solid rgba(255,204,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--yellow);
+  }
+
+  /* Rhythm block */
+  .rhythm-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 48px;
+  }
+
+  .rhythm-bar {
+    display: flex;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 48px;
+  }
+
+  .rhythm-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.9);
+    transition: all 0.3s;
+    cursor: default;
+    position: relative;
+  }
+
+  .rhythm-seg:hover { filter: brightness(1.3); }
+
+  .rhythm-seg.seg-1 { background: rgba(0,255,136,0.25); flex: 10; border-right: 1px solid var(--bg-dark); }
+  .rhythm-seg.seg-2 { background: rgba(51,136,255,0.25); flex: 15; border-right: 1px solid var(--bg-dark); }
+  .rhythm-seg.seg-3 { background: rgba(255,51,85,0.25); flex: 10; border-right: 1px solid var(--bg-dark); }
+  .rhythm-seg.seg-4 { background: rgba(170,85,255,0.35); flex: 5; }
+
+  .rhythm-labels {
+    display: flex;
+    margin-top: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .rhythm-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rhythm-dot { width: 8px; height: 8px; border-radius: 2px; }
+  .rhythm-dot.g { background: var(--accent); }
+  .rhythm-dot.b { background: var(--blue); }
+  .rhythm-dot.r { background: var(--red); }
+  .rhythm-dot.p { background: var(--purple); }
+
+  /* ===== LOCATIONS ===== */
+  .locations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .loc-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .loc-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+
+  .loc-icon { font-size: 2rem; margin-bottom: 10px; }
+  .loc-name { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+    text-align: center;
+    margin-top: 80px;
+  }
+
+  .footer-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .footer-sub {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .content-nav-top { flex-direction: column; align-items: stretch; gap: 8px; }
+    .extra-nav-btns { margin-left: 0; justify-content: flex-start; }
+    .series-slide-btn { min-width: 150px; }
+    .hero-start-btn { padding: 16px 40px; font-size: 0.95rem; letter-spacing: 4px; }
+    .timeline { padding-left: 28px; }
+    .timeline-block { padding: 20px; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .characters-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .characters-grid { grid-template-columns: 1fr; }
+    .rhythm-bar { height: 36px; }
+    .rhythm-seg { font-size: 0.55rem; }
+  }
+
+  /* Fade-in animation */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in:nth-child(2) { animation-delay: 0.1s; }
+  .fade-in:nth-child(3) { animation-delay: 0.2s; }
+  .fade-in:nth-child(4) { animation-delay: 0.3s; }
+
+  /* ===== CHARACTER GRAPH ===== */
+  .graph-container {
+    position: relative;
+    width: 100%;
+    min-height: 520px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .graph-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .graph-node {
+    position: absolute;
+    width: 140px;
+    text-align: center;
+    cursor: default;
+    transition: transform 0.3s;
+    z-index: 2;
+  }
+  .graph-node:hover { transform: scale(1.08); }
+  .graph-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 3px solid;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+  .graph-avatar.g { border-color: var(--accent); background: rgba(0,255,136,0.1); }
+  .graph-avatar.r { border-color: var(--red); background: rgba(255,51,85,0.1); }
+  .graph-avatar.b { border-color: var(--blue); background: rgba(51,136,255,0.1); }
+  .graph-avatar.p { border-color: var(--purple); background: rgba(170,85,255,0.1); }
+  .graph-node-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+  .graph-node-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  .graph-legend {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+    background: rgba(10,10,15,0.8);
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .graph-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+  .graph-legend-line {
+    width: 24px; height: 2px;
+    border-radius: 1px;
+  }
+
+  /* ===== LOCATIONS MAP ===== */
+  .map-container {
+    position: relative;
+    width: 100%;
+    min-height: 480px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .map-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+    height: 480px;
+    padding: 2px;
+  }
+  .map-cell {
+    background: rgba(18,18,26,0.9);
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .map-cell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    transition: opacity 0.4s;
+    border-radius: 8px;
+  }
+  .map-cell:hover::before { opacity: 1; }
+  .map-cell:hover { transform: scale(1.02); z-index: 2; }
+  .map-cell.mc-green::before { background: radial-gradient(circle at center, var(--accent-glow), transparent 70%); }
+  .map-cell.mc-red::before { background: radial-gradient(circle at center, var(--red-glow), transparent 70%); }
+  .map-cell.mc-blue::before { background: radial-gradient(circle at center, var(--blue-glow), transparent 70%); }
+  .map-cell.mc-purple::before { background: radial-gradient(circle at center, var(--purple-glow), transparent 70%); }
+  .map-cell.mc-yellow::before { background: radial-gradient(circle at center, var(--yellow-glow), transparent 70%); }
+  .map-icon { font-size: 2.5rem; margin-bottom: 12px; position: relative; z-index: 1; }
+  .map-name { font-weight: 600; font-size: 1rem; color: var(--text-bright); margin-bottom: 6px; position: relative; z-index: 1; }
+  .map-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; position: relative; z-index: 1; }
+  .map-episodes {
+    display: flex; gap: 4px; margin-top: 10px;
+    position: relative; z-index: 1;
+  }
+  .map-ep-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* ===== SOUNDTRACK ===== */
+  .soundtrack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .sound-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .sound-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .sound-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .sound-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+  .sound-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-bright);
+  }
+  .sound-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  .sound-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .sound-bar {
+    height: 32px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 3px;
+    overflow: hidden;
+  }
+  .sound-bar-line {
+    width: 3px;
+    border-radius: 2px;
+    background: var(--accent);
+    opacity: 0.5;
+    animation: soundwave 1.5s ease-in-out infinite alternate;
+  }
+  .sound-card:hover .sound-bar-line { opacity: 0.9; }
+  @keyframes soundwave {
+    0% { height: 4px; }
+    50% { height: 20px; }
+    100% { height: 8px; }
+  }
+  .sound-themes {
+    margin-top: 32px;
+  }
+  .theme-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .theme-row:last-child { border-bottom: none; }
+  .theme-char {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .theme-info { flex: 1; }
+  .theme-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-bright);
+    margin-bottom: 2px;
+  }
+  .theme-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .theme-mood {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  /* ===== TRACKER v2 ===== */
+  .tracker-container { margin-bottom: 48px; }
+  .tracker-top { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  @media (max-width: 600px) { .tracker-top { grid-template-columns: 1fr 1fr; } }
+  .tracker-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; transition: all 0.3s; }
+  .tracker-stat-card:hover { border-color: var(--accent); }
+  .tracker-stat-val { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .tracker-stat-val.green { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
+  .tracker-stat-val.yellow { color: var(--yellow); text-shadow: 0 0 15px var(--yellow-glow); }
+  .tracker-stat-val.blue { color: var(--blue); text-shadow: 0 0 15px var(--blue-glow); }
+  .tracker-stat-val.dim { color: var(--text-dim); }
+  .tracker-stat-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .tracker-progress-bar { width: 100%; height: 12px; background: rgba(255,255,255,0.04); border-radius: 6px; margin-bottom: 6px; overflow: hidden; }
+  .tracker-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--blue), var(--purple)); border-radius: 6px; transition: width 0.6s cubic-bezier(.4,0,.2,1); width: 0%; position: relative; }
+  .tracker-progress-fill::after { content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3)); border-radius: 0 6px 6px 0; }
+  .tracker-progress-text { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 24px; }
+  .tracker-pct { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
+  .tracker-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; }
+  .tracker-legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-dim); cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: all 0.2s; }
+  .tracker-legend-item:hover { background: rgba(255,255,255,0.03); }
+  .tracker-legend-item.active { background: rgba(255,255,255,0.06); color: var(--text); }
+  .tracker-legend-dot { width: 10px; height: 10px; border-radius: 4px; }
+  .tracker-ep { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: border-color 0.3s; }
+  .tracker-ep.ep-complete { border-color: rgba(0,255,136,0.3); }
+  .tracker-ep-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; gap: 12px; }
+  .tracker-ep-header:hover { background: var(--bg-card-hover); }
+  .tracker-ep-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+  .tracker-ep-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; background: var(--accent-glow); color: var(--accent); letter-spacing: 1px; flex-shrink: 0; }
+  .tracker-ep-name { font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tracker-ep-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .tracker-ep-mini-bar { width: 80px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+  .tracker-ep-mini-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s; }
+  .tracker-ep-count { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); min-width: 32px; text-align: right; }
+  .tracker-ep-toggle { color: var(--text-dim); font-size: 0.8rem; transition: transform 0.3s; }
+  .tracker-ep.open .tracker-ep-toggle { transform: rotate(180deg); }
+  .tracker-ep-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+  .tracker-ep.open .tracker-ep-body { max-height: 3000px; }
+  .tracker-day-row { display: flex; align-items: center; gap: 10px; padding: 10px 20px; transition: background 0.2s; user-select: none; position: relative; }
+  .tracker-day-row:hover { background: var(--bg-card-hover); }
+  .tracker-status-btn { width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--border); background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.3s; font-size: 0.85rem; color: transparent; }
+  .tracker-status-btn:hover { border-color: var(--text-dim); }
+  .tracker-day-row[data-status="planned"] .tracker-status-btn { border-color: var(--border); color: transparent; }
+  .tracker-day-row[data-status="filming"] .tracker-status-btn { border-color: var(--yellow); background: var(--yellow-glow); color: var(--yellow); box-shadow: 0 0 12px var(--yellow-glow); animation: pulse-y 2s infinite; }
+  @keyframes pulse-y { 0%,100% { box-shadow: 0 0 8px var(--yellow-glow); } 50% { box-shadow: 0 0 18px var(--yellow-glow); } }
+  .tracker-day-row[data-status="done"] .tracker-status-btn { border-color: var(--accent); background: var(--accent); color: var(--bg-dark); box-shadow: 0 0 12px var(--accent-glow); }
+  .tracker-day-row[data-status="postponed"] .tracker-status-btn { border-color: var(--red); background: var(--red-glow); color: var(--red); }
+  .tracker-day-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--yellow); width: 52px; flex-shrink: 0; }
+  .tracker-day-info { flex: 1; min-width: 0; }
+  .tracker-day-name { font-size: 0.88rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tracker-day-row[data-status="done"] .tracker-day-name { color: var(--text-dim); text-decoration: line-through; text-decoration-color: rgba(0,255,136,0.4); }
+  .tracker-day-row[data-status="postponed"] .tracker-day-name { color: var(--text-dim); text-decoration: line-through; text-decoration-color: rgba(255,51,85,0.4); }
+  .tracker-day-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; display: flex; gap: 12px; align-items: center; }
+  .tracker-day-status-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; flex-shrink: 0; }
+  .tracker-day-row[data-status="planned"] .tracker-day-status-label { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+  .tracker-day-row[data-status="filming"] .tracker-day-status-label { background: var(--yellow-glow); color: var(--yellow); }
+  .tracker-day-row[data-status="done"] .tracker-day-status-label { background: var(--accent-glow); color: var(--accent); }
+  .tracker-day-row[data-status="postponed"] .tracker-day-status-label { background: var(--red-glow); color: var(--red); }
+  .tracker-note-row { padding: 0 20px 8px 72px; display: none; }
+  .tracker-note-row.visible { display: block; }
+  .tracker-note-input { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.82rem; outline: none; transition: border-color 0.3s; resize: none; min-height: 36px; max-height: 100px; }
+  .tracker-note-input:focus { border-color: var(--accent); }
+  .tracker-note-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+  .tracker-note-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; padding: 4px; border-radius: 4px; transition: all 0.2s; flex-shrink: 0; opacity: 0.3; }
+  .tracker-day-row:hover .tracker-note-btn { opacity: 1; }
+  .tracker-note-btn:hover { color: var(--accent); }
+  .tracker-note-btn.has-note { opacity: 1; color: var(--yellow); }
+
+  /* ===== AUTH OVERLAY ===== */
+  .auth-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-dark);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: opacity 0.5s, visibility 0.5s;
+  }
+  .auth-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .auth-logo { font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 700; color: var(--text-bright); letter-spacing: 6px; margin-bottom: 8px; }
+  .auth-sub { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--accent); letter-spacing: 4px; margin-bottom: 40px; }
+  .auth-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 32px;
+    cursor: pointer; transition: all 0.3s;
+    color: var(--text-bright); font-size: 1rem; font-family: 'Inter', sans-serif;
+  }
+  .auth-btn:hover { border-color: var(--accent); transform: scale(1.03); box-shadow: 0 0 24px var(--accent-glow); }
+  .auth-btn svg { width: 24px; height: 24px; }
+  .auth-error { color: var(--red); font-size: 0.85rem; margin-top: 16px; max-width: 400px; }
+  .auth-loading { color: var(--text-dim); font-size: 0.9rem; margin-top: 16px; }
+
+  /* ===== USER BAR ===== */
+  .user-bar {
+    display: flex; align-items: center; gap: 10px;
+    margin-left: auto; padding: 8px 0; flex-shrink: 0;
+  }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); }
+  .user-name { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; }
+  .user-logout {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    color: var(--text-dim); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .user-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== EDIT MODE ===== */
+  .edit-toggle {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--bg-card);
+    color: var(--text-dim); transition: all 0.3s; white-space: nowrap;
+  }
+  .edit-toggle:hover { border-color: var(--yellow); color: var(--yellow); }
+  .edit-toggle.editing { background: var(--yellow-glow); border-color: var(--yellow); color: var(--yellow); }
+
+  body.edit-mode [data-editable] {
+    outline: 1px dashed rgba(255,204,0,0.25);
+    outline-offset: 4px;
+    cursor: text;
+    transition: outline-color 0.3s;
+  }
+  body.edit-mode [data-editable]:hover {
+    outline-color: rgba(255,204,0,0.6);
+  }
+  body.edit-mode [data-editable]:focus {
+    outline: 2px solid var(--yellow);
+    outline-offset: 4px;
+    background: rgba(255,204,0,0.03);
+    border-radius: 4px;
+  }
+
+  .save-toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--accent); color: var(--bg-dark);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+    padding: 12px 20px; border-radius: 10px;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    z-index: 9998; opacity: 0; transform: translateY(20px);
+    transition: all 0.3s; pointer-events: none;
+    letter-spacing: 1px;
+  }
+  .save-toast.show { opacity: 1; transform: translateY(0); }
+</style>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<!-- Auth Overlay -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-logo">GHOST LOGIN</div>
+  <div class="auth-sub">СЦЕНАРИИ</div>
+  <button class="auth-btn" id="googleSignIn" onclick="signInWithGoogle()">
+    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Войти через Google
+  </button>
+  <div id="authError" class="auth-error" style="display:none"></div>
+  <div id="authLoading" class="auth-loading" style="display:none">Подключение...</div>
+</div>
+
+<!-- Save toast -->
+<div class="save-toast" id="saveToast">✓ СОХРАНЕНО</div>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <h1 class="glitch-title">GHOST LOGIN</h1>
+    <p class="hero-subtitle">Сезон 1</p>
+    <p class="hero-desc" data-editable>
+      Он взломал университетский сервер ради интереса. Но за дверью, которую он открыл, стояла тень,
+      которая ждала его прихода. Хакер. Аналитик. Агент КНБ. Одна команда. Одна сеть. Один шанс.
+    </p>
+    <button class="hero-start-btn" onclick="document.getElementById('mainContent').scrollIntoView({behavior:'smooth'})">НАЧАТЬ</button>
+  </div>
+</section>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div id="mainContent" class="main-content">
+
+<!-- Navigation -->
+<nav class="content-nav-bar" id="nav">
+  <div class="content-nav-inner">
+    <div class="content-nav-top">
+      <button class="nav-logo-btn" onclick="scrollToHero()">GL</button>
+      <button class="about-btn" id="aboutBtn" onclick="showTab('overview')">О СЕРИАЛЕ</button>
+      <div class="extra-nav-btns">
+        <button class="extra-nav-btn primary" onclick="showTab('tracker')">▶ ТРЕКЕР</button>
+        <button class="extra-nav-btn" onclick="showTab('characters')">ПЕРСОНАЖИ</button>
+        <button class="extra-nav-btn" onclick="showTab('locations')">ЛОКАЦИИ</button>
+        <button class="extra-nav-btn" onclick="showTab('soundtrack')">САУНДТРЕК</button>
+        <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()" style="display:none">РЕДАКТИРОВАТЬ</button>
+        <div class="user-bar" id="userBar" style="display:none">
+          <img class="user-avatar" id="userAvatar" src="" alt="">
+          <span class="user-name" id="userName"></span>
+          <button class="user-logout" onclick="logOut()">Выйти</button>
+        </div>
+      </div>
+    </div>
+    <div class="series-slider-wrap">
+      <button class="slider-arrow" onclick="slideLeft()">◀</button>
+      <div class="slider-track" id="sliderTrack">
+        <button class="series-slide-btn active" onclick="showTab('ep1')">
+          <div class="slide-ep-num">СЕРИЯ 01</div>
+          <div class="slide-ep-title">Новый доступ</div>
+        </button>
+        <button class="series-slide-btn" onclick="showTab('ep2')">
+          <div class="slide-ep-num">СЕРИЯ 02</div>
+          <div class="slide-ep-title">Слепая зона</div>
+        </button>
+        <button class="series-slide-btn" onclick="showTab('ep3')">
+          <div class="slide-ep-num">СЕРИЯ 03</div>
+          <div class="slide-ep-title">Отбор</div>
+        </button>
+        <button class="series-slide-btn" onclick="showTab('ep4')">
+          <div class="slide-ep-num">СЕРИЯ 04</div>
+          <div class="slide-ep-title">Тёмная сеть</div>
+        </button>
+        <button class="series-slide-btn" onclick="showTab('ep5')">
+          <div class="slide-ep-num">СЕРИЯ 05</div>
+          <div class="slide-ep-title">Нулевой след</div>
+        </button>
+      </div>
+      <button class="slider-arrow" onclick="slideRight()">▶</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Content container -->
+<div class="container">
+<section id="tab-overview" class="overview-section episode-section">
+
+  <!-- Characters -->
+  <div class="characters-section" style="padding-top:0">
+    <div class="section-title">Персонажи</div>
+    <div class="characters-grid">
+      <div class="char-card fade-in">
+        <div class="char-icon green">🖥️</div>
+        <div class="char-name">Главный герой</div>
+        <div class="char-role">Хакер / IT-студент</div>
+        <div class="char-desc" data-editable>Тихий, наблюдательный, гениальный. Переехал в новый город, поступил на IT-специальность. Видит слабости в каждой системе. Его взлом ради «проверки себя» запустил цепочку событий, которую невозможно остановить. Живёт по принципу: «Если я могу войти — значит, дверь была открыта».</div>
+      </div>
+      <div class="char-card red-accent fade-in">
+        <div class="char-icon red">📊</div>
+        <div class="char-name">Девушка</div>
+        <div class="char-role red">Аналитик / Социальный инженер</div>
+        <div class="char-desc" data-editable>Умная, собранная, непрочитанная. Не хакер — нечто другое. Её оружие — психология, поведение людей, социальные сети и человеческие ошибки. Там, где герой видит код, она видит людей. Вместе они — идеальная машина расследований.</div>
+      </div>
+      <div class="char-card blue-accent fade-in">
+        <div class="char-icon blue">🛡️</div>
+        <div class="char-name">Сотрудник КНБ</div>
+        <div class="char-role blue">Куратор / Вербовщик</div>
+        <div class="char-desc" data-editable>Спокойный, точный, опасный. Видит на три хода вперёд. Приехал в университет «искать таланты», но на самом деле ведёт серьёзное расследование. Предложил герою выбор: стать частью команды или стать объектом проверки. Знает больше, чем говорит.</div>
+      </div>
+      <div class="char-card purple-accent fade-in">
+        <div class="char-icon purple">👤</div>
+        <div class="char-name">Антагонист</div>
+        <div class="char-role purple">В тени до 2 сезона</div>
+        <div class="char-desc" data-editable>Невидимый. Безымянный. Но он существует. Каждая утечка, каждый взлом, каждая схема — ведёт к нему. Он заметил героя в момент первого входа и наблюдал всё это время. Его послание в финале: «Ты нашёл дверь. Но не понимаешь, кто тебе позволил её открыть.»</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Episode cards -->
+  <div class="section-title">Серии сезона</div>
+  <div class="overview-grid">
+    <div class="overview-card fade-in" onclick="showTab('ep1')">
+      <div class="ov-ep-num">СЕРИЯ 01</div>
+      <div class="ov-ep-title">Новый доступ</div>
+      <div class="ov-ep-desc" data-editable>Приезд героя. Новый университет. Тихое наблюдение. Первый взлом серверной. За учебными файлами скрывается нечто большее.</div>
+      <div class="ov-days"><div class="ov-day-dot">1</div><div class="ov-day-dot">2</div><div class="ov-day-dot">3</div><div class="ov-day-dot">4</div><div class="ov-day-dot">5</div></div>
+    </div>
+    <div class="overview-card fade-in" onclick="showTab('ep2')">
+      <div class="ov-ep-num">СЕРИЯ 02</div>
+      <div class="ov-ep-title">Слепая зона</div>
+      <div class="ov-ep-desc" data-editable>Украденные данные раскрывают чужие следы. Скрытые архивы. Кто-то был здесь раньше. Первая встреча с ней. Приезд КНБ.</div>
+      <div class="ov-days"><div class="ov-day-dot">1</div><div class="ov-day-dot">2</div><div class="ov-day-dot">3</div><div class="ov-day-dot">4</div><div class="ov-day-dot">5</div></div>
+    </div>
+    <div class="overview-card fade-in" onclick="showTab('ep3')">
+      <div class="ov-ep-num">СЕРИЯ 03</div>
+      <div class="ov-ep-title">Отбор</div>
+      <div class="ov-ep-desc" data-editable>КНБ в университете. Скрытая вербовка. Выбор: помогать или стать подозреваемым. Формирование команды. Первое дело.</div>
+      <div class="ov-days"><div class="ov-day-dot">1</div><div class="ov-day-dot">2</div><div class="ov-day-dot">3</div><div class="ov-day-dot">4</div><div class="ov-day-dot">5</div></div>
+    </div>
+    <div class="overview-card fade-in" onclick="showTab('ep4')">
+      <div class="ov-ep-num">СЕРИЯ 04</div>
+      <div class="ov-ep-title">Тёмная сеть</div>
+      <div class="ov-ep-desc" data-editable>Даркнет. Фишинг. Социальная инженерия. Командная работа. Поимка посредника. След ведёт обратно в университет.</div>
+      <div class="ov-days"><div class="ov-day-dot">1</div><div class="ov-day-dot">2</div><div class="ov-day-dot">3</div><div class="ov-day-dot">4</div><div class="ov-day-dot">5</div></div>
+    </div>
+    <div class="overview-card fade-in" onclick="showTab('ep5')">
+      <div class="ov-ep-num">СЕРИЯ 05</div>
+      <div class="ov-ep-title">Нулевой след</div>
+      <div class="ov-ep-desc" data-editable>Финальная операция. Раскрытие сети. Спасение данных. Главный организатор уходит в тень. Анонимное сообщение. Игра не окончена.</div>
+      <div class="ov-days"><div class="ov-day-dot">1</div><div class="ov-day-dot">2</div><div class="ov-day-dot">3</div><div class="ov-day-dot">4</div><div class="ov-day-dot">5</div></div>
+    </div>
+  </div>
+
+  <!-- Locations -->
+  <div class="section-title">Основные локации</div>
+  <div class="locations-grid">
+    <div class="loc-card"><div class="loc-icon">🏛️</div><div class="loc-name">Университет</div></div>
+    <div class="loc-card"><div class="loc-icon">🖥️</div><div class="loc-name">Серверная</div></div>
+    <div class="loc-card"><div class="loc-icon">🏠</div><div class="loc-name">Квартира героя</div></div>
+    <div class="loc-card"><div class="loc-icon">🕵️</div><div class="loc-name">Штаб-квартира</div></div>
+    <div class="loc-card"><div class="loc-icon">🌃</div><div class="loc-name">Улицы города</div></div>
+    <div class="loc-card"><div class="loc-icon">🎯</div><div class="loc-name">Операции</div></div>
+  </div>
+
+  <!-- Rhythm -->
+  <div class="rhythm-section">
+    <div class="section-title" style="margin-bottom:20px">Ритм каждой серии — 40 минут</div>
+    <div class="rhythm-bar">
+      <div class="rhythm-seg seg-1">00:00–10:00</div>
+      <div class="rhythm-seg seg-2">10:00–25:00</div>
+      <div class="rhythm-seg seg-3">25:00–35:00</div>
+      <div class="rhythm-seg seg-4">35:00–40:00</div>
+    </div>
+    <div class="rhythm-labels">
+      <div class="rhythm-label"><div class="rhythm-dot g"></div>Завязка и проблема</div>
+      <div class="rhythm-label"><div class="rhythm-dot b"></div>Расследование и конфликт</div>
+      <div class="rhythm-label"><div class="rhythm-dot r"></div>Резкий поворот</div>
+      <div class="rhythm-label"><div class="rhythm-dot p"></div>Клиффхэнгер</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== СЕРИЯ 1: НОВЫЙ ДОСТУП ===== -->
+<section id="tab-ep1" class="episode-section active">
+  <div class="ep-header">
+    <div class="ep-number">Серия 01 из 05</div>
+    <h2 class="ep-title">«Новый доступ»</h2>
+    <div class="ep-meta">
+      <div class="ep-meta-item"><div class="dot"></div>40 минут</div>
+      <div class="ep-meta-item"><div class="dot"></div>5 съёмочных дней</div>
+      <div class="ep-meta-item"><div class="dot"></div>Пилотная серия</div>
+    </div>
+  </div>
+
+  <div class="ep-mission">
+    <div class="ep-mission-label">Задача серии</div>
+    <div class="ep-mission-text" data-editable>Познакомить зрителя с героем — тихим, наблюдательным IT-студентом, который только что переехал в новый город. Показать, как любопытство и талант толкают его на первый незаконный шаг, последствия которого изменят всё.</div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-block fade-in">
+      <div class="tl-time">00:00 — 10:00</div>
+      <div class="tl-phase">Завязка — «Чужой среди своих»</div>
+      <div class="tl-content" data-editable>
+        <p>Открывающий кадр: автобус/поезд приближается к городу. Солнце садится за панельными домами. Главный герой сидит у окна с наушниками, лицо отражается в стекле — спокойное, задумчивое, отстранённое.</p>
+        <p>Он переводится в местный университет на IT-специальность. Не новичок в хакерстве, но здесь никто об этом не знает. Заселяется в маленькую квартиру — минимум вещей: рюкзак, ноутбук, документы на перевод.</p>
+        <p>Первый день в университете. Коридоры полны студентов, но герой идёт сквозь толпу как призрак. Не общается. Наблюдает. Камера показывает его глазами: он сканирует всё — камеры наблюдения, замки на дверях, расположение корпусов, поведение охраны.</p>
+        <div class="scene-note">Режиссёрская заметка: Первые 10 минут — без единого диалога героя. Только его глаза, руки, движения. Зритель должен почувствовать: этот человек видит то, чего не видят другие.</div>
+      </div>
+    </div>
+
+    <div class="timeline-block fade-in">
+      <div class="tl-time">10:00 — 25:00</div>
+      <div class="tl-phase">Развитие — «Сканирование системы»</div>
+      <div class="tl-content" data-editable>
+        <p>Герой начинает методично изучать университет. Не как студент — как взломщик, изучающий периметр. Компьютерные классы становятся его лабораторией: он подключается к университетской сети, изучает её архитектуру, находит уязвимости.</p>
+        <p>Параллельно наблюдает за охраной — записывает их расписание, маршруты обходов, время смены. Отмечает, кто ходит в технические помещения и когда серверная остаётся без присмотра.</p>
+        <p>Это не злой умысел. Это азарт и самопроверка. Он думает: «Если я смогу — значит, система слабая. Если система слабая — значит, я прав.»</p>
+        <p>Вечер. Герой в своей квартире, перед экраном ноутбука. Рисует схему корпуса, расписание охраны, точки доступа. Принимает решение.</p>
+        <div class="scene-note">Визуально: монтаж «подготовки» — руки на клавиатуре, схемы на экране, часы на стене, пустые коридоры университета ночью. Музыка нарастает.</div>
+      </div>
+    </div>
+
+    <div class="timeline-block red-block fade-in">
+      <div class="tl-time red">25:00 — 35:00</div>
+      <div class="tl-phase">Поворот — «Проникновение»</div>
+      <div class="tl-content" data-editable>
+        <p>Ночь. Университет пуст. Герой проникает в здание — тихо, уверенно, как будто делал это сто раз. Обходит камеры, ждёт, пока охранник уйдёт на обход.</p>
+        <p>Серверная комната. Синевато-зелёный свет мониторов. Гул серверов. Герой подключает USB-устройство, запускает код. Пальцы летают по клавиатуре. На экране — строки кода, прогресс-бары, доступ открывается слой за слоем.</p>
+        <p>Устанавливает бэкдор — скрытый канал удалённого доступа. Теперь он сможет войти в систему из любой точки.</p>
+        <p>Напряжённый момент: шаги в коридоре. Герой замирает, прижимается к стене. Свет фонарика скользит по стеклу двери. Тишина. Шаги удаляются. Герой выдыхает.</p>
+        <div class="scene-note danger">Техническая заметка: Сцена в серверной — ключевая визуальная сцена пилота. Низкое освещение, сине-зелёные LED-огни серверов, звук вентиляторов и пульса героя. Камера — крупные планы лица, рук, экрана.</div>
+      </div>
+    </div>
+
+    <div class="timeline-block purple-block fade-in">
+      <div class="tl-time purple">35:00 — 40:00</div>
+      <div class="tl-phase">Клиффхэнгер — «За дверью»</div>
+      <div class="tl-content" data-editable>
+        <p>Квартира героя. Ночь. Единственный свет — экран компьютера. Энергетик на столе, наушники на шее.</p>
+        <p>Запускает удалённое подключение. Экран мигает. Подключение установлено. Он — внутри университетского сервера.</p>
+        <p>Сначала — ожидаемое: учебные файлы, расписание, базы студентов. Лицо героя довольное — получилось.</p>
+        <p>Но потом он заходит глубже. И его лицо меняется. Удивление. Непонимание. Тревога.</p>
+        <p>Он нашёл не просто университетские данные. Там — что-то другое. Что-то, чего там быть не должно.</p>
+        <div class="dialogue">
+          <div class="speaker">Внутренний монолог героя</div>
+          «Это не учебные файлы. Это... что это?»
+        </div>
+        <p>Экран отражается в его глазах. Музыка обрывается. Чёрный экран. Титры.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shooting Days -->
+  <div class="shooting-days">
+    <div class="shooting-title">Съёмочные дни</div>
+
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 1</span><span class="day-name">Приезд героя, знакомство с городом</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Сцены</div><div class="day-detail-text">Герой приезжает на вокзал/автостанцию. Едет через город в транспорте. Заселяется в квартиру. Первые одинокие моменты на новом месте.</div></div>
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Вокзал/автостанция, улицы города, квартира героя</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, массовка</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Рюкзак, ноутбук, телефон, документы на перевод в университет</div></div>
+      </div>
+    </div>
+
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 2</span><span class="day-name">Университет, первый день, наблюдение</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Сцены</div><div class="day-detail-text">Герой входит в университет. Оформление документов. Первые пары. Наблюдает за студентами и преподавателями. Чувствует себя чужим.</div></div>
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Вход в университет, коридоры, деканат, лекционные залы</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, преподаватели, студенты (массовка), секретарь деканата</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Документы, учебники, тетради, ноутбук</div></div>
+      </div>
+    </div>
+
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 3</span><span class="day-name">Изучение корпуса, компьютерные классы, охрана</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Сцены</div><div class="day-detail-text">Герой исследует технические коридоры и подвалы. Работает в компьютерном классе, изучая сеть. Наблюдает за сменами охраны. Отслеживает расписание доступа к серверной.</div></div>
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Компьютерный класс, технические коридоры, зона охраны, дверь серверной</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, охранник, студенты</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Ноутбук героя, блокнот/телефон для заметок, бейдж</div></div>
+      </div>
+    </div>
+
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 4</span><span class="day-name">Проникновение в серверную, установка бэкдора</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Сцены</div><div class="day-detail-text">Вечер/ночь. Герой ждёт момент. Проникает в серверную, обходя охрану. Подключается к серверу, устанавливает бэкдор. Аккуратно уходит. Напряжённый момент — чуть не попался.</div></div>
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Коридор университета (ночь), серверная комната (главная сцена), выход из здания (ночь)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, ночной охранник</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">USB-устройство для бэкдора, маленький ноутбук, фонарик телефона, серверное оборудование, карта доступа</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Низкое освещение, сине-зелёные огни серверов, звуковые эффекты серверной, крупные планы</div></div>
+      </div>
+    </div>
+
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 5</span><span class="day-name">Дом героя, удалённое подключение, финал серии</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Сцены</div><div class="day-detail-text">Герой за компьютером. Запускает удалённое подключение. Данные появляются — он внутри. Сначала радость, потом шок. Понимает, что нашёл не просто учебные файлы.</div></div>
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Квартира/комната героя</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Компьютер с экраном (графика на постпродакшне), наушники, энергетик/чай, тёмная комната с подсветкой только от экрана</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Крупные планы лица героя, графика экрана компьютера, атмосферное освещение, музыка нарастает к финалу</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== СЕРИЯ 2: СЛЕПАЯ ЗОНА ===== -->
+<section id="tab-ep2" class="episode-section">
+  <div class="ep-header">
+    <div class="ep-number">Серия 02 из 05</div>
+    <h2 class="ep-title">«Слепая зона»</h2>
+    <div class="ep-meta">
+      <div class="ep-meta-item"><div class="dot"></div>40 минут</div>
+      <div class="ep-meta-item"><div class="dot"></div>5 съёмочных дней</div>
+    </div>
+  </div>
+
+  <div class="ep-mission">
+    <div class="ep-mission-label">Задача серии</div>
+    <div class="ep-mission-text" data-editable>Показать, что герой зашёл дальше, чем планировал. Украденные данные раскрывают чужие следы — кто-то использовал эту систему до него, и далеко не ради интереса. Первая встреча с загадочной девушкой. Прибытие КНБ переворачивает всё.</div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-block fade-in">
+      <div class="tl-time">00:00 — 10:00</div>
+      <div class="tl-phase">Завязка — «Цифровой трофей»</div>
+      <div class="tl-content" data-editable>
+        <p>Квартира героя. Он не спал всю ночь. На столе — пустые чашки, бумажки с заметками. Экран компьютера — единственный свет.</p>
+        <p>Герой глубоко копается в украденных данных: анкеты студентов и преподавателей, внутренние документы, логины, переписки, служебные файлы. Информация течёт как река.</p>
+        <p>Он воспринимает это как личную победу — доказательство своего уровня. Сортирует файлы, строит структуру. Глаза горят. Он в своей стихии.</p>
+        <div class="scene-note">Визуально: камера кружит вокруг героя за компьютером — он как дирижёр, управляющий потоками данных. На экране — красивые графики структуры файлов, деревья каталогов, скроллящийся текст.</div>
+      </div>
+    </div>
+
+    <div class="timeline-block fade-in">
+      <div class="tl-time">10:00 — 25:00</div>
+      <div class="tl-phase">Развитие — «Чужие следы»</div>
+      <div class="tl-content" data-editable>
+        <p>Эйфория проходит. Герой замечает аномалии в системе: подозрительные архивы с шифрованными именами, скрытые папки, доступ к которым был получен не им. Логи показывают — кто-то заходил сюда раньше. Регулярно. Профессионально.</p>
+        <p>Находит непонятные списки — имена, суммы, даты. Переводы? Продажа данных? Он ещё не уверен, но чувство победы испаряется. Вместо него — холод.</p>
+        <p>В университете тем временем нарастает напряжение. Преподаватели обсуждают за закрытыми дверями «инцидент с безопасностью». Студенты шепчутся в коридорах. Герой слышит обрывки разговоров и понимает: ставки выросли.</p>
+        <p>Он пытается вести себя нормально — ходит на пары, сидит в столовой. Но внутри — напряжение. Каждый раз, когда преподаватель смотрит в его сторону, его пульс учащается.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block red-block fade-in">
+      <div class="tl-time red">25:00 — 35:00</div>
+      <div class="tl-phase">Поворот — «Она»</div>
+      <div class="tl-content" data-editable>
+        <p>Коридор университета. Обычный день. Герой идёт мимо аудитории — и замечает её.</p>
+        <p>Девушка среди студентов, но не такая как все. Собранная. Внимательная. Её взгляд — как сканер: она тоже наблюдает за окружающими. Она тоже видит то, чего не видят другие.</p>
+        <p>Их глаза встречаются на мгновение. Нет улыбки. Нет приветствия. Только взаимное узнавание — два хищника заметили друг друга.</p>
+        <p>Герой возвращается к данным с новой тревогой. Находит ещё больше подозрительного. Масштаб утечки больше, чем он думал. Это не университетская история — это что-то серьёзное.</p>
+        <div class="scene-note">Камера: встреча взглядов — замедленная съёмка. Звук окружения приглушается. Только двое, замечающих друг друга в толпе. Потом — резко возвращается шум.</div>
+      </div>
+    </div>
+
+    <div class="timeline-block purple-block fade-in">
+      <div class="tl-time purple">35:00 — 40:00</div>
+      <div class="tl-phase">Клиффхэнгер — «Чёрные машины»</div>
+      <div class="tl-content" data-editable>
+        <p>Обычный учебный день. Студенты выходят из корпуса. Солнце, смех, рутина.</p>
+        <p>И тут — два чёрных автомобиля останавливаются у главного входа. Двери открываются. Выходят люди в строгих костюмах. Сотрудники КНБ.</p>
+        <p>Они входят в здание. Тишина распространяется как волна — студенты замолкают, преподаватели замирают. Декан встречает их с бледным лицом.</p>
+        <p>Герой видит всё это из коридора второго этажа. Его лицо — страх и понимание. Он знает. Это — за данными. Возможно, за ним.</p>
+        <div class="scene-note danger">Техническая заметка: Замедленная съёмка входа КНБ. Тревожная музыка. Контраст между солнечным днём снаружи и холодным страхом внутри. Финальный кадр — лицо героя крупным планом. Затемнение.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shooting-days">
+    <div class="shooting-title">Съёмочные дни</div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 1</span><span class="day-name">Герой изучает украденные данные дома</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Квартира/комната героя</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Компьютер с несколькими мониторами, стикеры/бумаги, еда/напитки (герой не спал)</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 2</span><span class="day-name">Обнаружение скрытых архивов и чужих следов</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Квартира героя (за компьютером)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Компьютер (графика экрана на постпродакшне), блокнот</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 3</span><span class="day-name">Университет, разговоры о безопасности</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Коридоры университета, лекционный зал, кабинет профессора (через дверь)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, 2-3 преподавателя, студенты (массовка)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Стандартный университетский антураж</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 4</span><span class="day-name">Первая встреча с девушкой, взгляды</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Коридор университета, аудитория/библиотека, столовая</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка (главная женская роль), студенты (массовка)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Заметки</div><div class="day-detail-text">Химия между героями — через взгляды, без диалога. Камера показывает, что оба наблюдательны.</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 5</span><span class="day-name">Приезд КНБ, клиффхэнгер</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Вход в университет, фойе/холл, коридор (герой наблюдает)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, 2-3 сотрудника КНБ в костюмах, декан/администрация, студенты (реакция)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Чёрные автомобили (2 шт.), строгие костюмы для КНБ, удостоверения</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Замедленная съёмка входа КНБ, тревожная музыка</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== СЕРИЯ 3: ОТБОР ===== -->
+<section id="tab-ep3" class="episode-section">
+  <div class="ep-header">
+    <div class="ep-number">Серия 03 из 05</div>
+    <h2 class="ep-title">«Отбор»</h2>
+    <div class="ep-meta">
+      <div class="ep-meta-item"><div class="dot"></div>40 минут</div>
+      <div class="ep-meta-item"><div class="dot"></div>5 съёмочных дней</div>
+    </div>
+  </div>
+
+  <div class="ep-mission">
+    <div class="ep-mission-label">Задача серии</div>
+    <div class="ep-mission-text" data-editable>Перевести историю из личной авантюры в государственное расследование. КНБ, вербовка, формирование команды. Герой оказывается перед выбором, который определит его судьбу: стать охотником или добычей.</div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-block fade-in">
+      <div class="tl-time">00:00 — 10:00</div>
+      <div class="tl-phase">Завязка — «Официальная версия»</div>
+      <div class="tl-content" data-editable>
+        <p>Университет гудит от напряжения. КНБ занимает кабинет ректора. Официальная версия — «программа поиска перспективных кадров среди студентов». Но в коридорах чувствуется другое: серьёзность, тяжёлые взгляды, закрытые двери.</p>
+        <p>На самом деле КНБ расследует серию цифровых преступлений — фишинг, продажа данных через даркнет, мошенничество. И след ведёт сюда, в этот университет.</p>
+        <p>Герой понимает опасность. Если они копнут глубже — выйдут на его бэкдор. На его следы. На него.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block fade-in">
+      <div class="tl-time">10:00 — 25:00</div>
+      <div class="tl-phase">Развитие — «Под микроскопом»</div>
+      <div class="tl-content" data-editable>
+        <p>Деканы представляют КНБ лучших студентов — «гордость факультетов». Среди выбранных — герой и та самая девушка. Краткие «собеседования» с каждым. Герой нервничает, но держит лицо.</p>
+        <p>Сотрудник КНБ — спокойный, внимательный, опасный мужчина — замечает способности героя. Не давит сразу. Наблюдает. Потом вызывает его на отдельный разговор.</p>
+        <div class="dialogue">
+          <div class="speaker">Сотрудник КНБ</div>
+          «У тебя хорошие способности. Я думаю, ты можешь быть полезен. Но мне нужно, чтобы ты понимал: либо ты помогаешь нам... либо мы начинаем интересоваться тобой. А нам есть, чем заинтересоваться.»
+        </div>
+        <p>Это не угроза. Это предложение. Но и отказ — не вариант. Герой принимает решение.</p>
+        <div class="scene-note">Ключевая сцена сезона. Два умных человека, каждый просчитывает другого. Крупные планы лиц. Паузы важнее слов.</div>
+      </div>
+    </div>
+
+    <div class="timeline-block red-block fade-in">
+      <div class="tl-time red">25:00 — 35:00</div>
+      <div class="tl-phase">Поворот — «Два полюса»</div>
+      <div class="tl-content" data-editable>
+        <p>Герой встречает девушку уже не просто взглядами. Первый настоящий разговор. И сразу — искры.</p>
+        <p>Она не хакер. Она — аналитик совершенно другого уровня. Психология, поведение людей, цифровые следы, ошибки в социальных сетях. Там, где он видит код, она видит людей.</p>
+        <p>Напряжение между ними: оба умные, оба наблюдательные, но подходы — противоположные. Он — взломщик систем. Она — взломщик людей. Каждый пытается «прочитать» другого.</p>
+        <p>Недоверие, но и уважение. Они чувствуют: вместе — сила. Но доверие ещё нужно заслужить.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block purple-block fade-in">
+      <div class="tl-time purple">35:00 — 40:00</div>
+      <div class="tl-phase">Клиффхэнгер — «Первое дело»</div>
+      <div class="tl-content" data-editable>
+        <p>Сотрудник КНБ собирает их вместе. Впервые — в одной комнате. На экране — схема, данные, связи.</p>
+        <p>Задание: выйти на мошенническую сеть, которая использует данные студентов. Фейковые аккаунты, фишинговые письма, продажа баз. Масштаб — больше, чем казалось.</p>
+        <p>Герой и девушка переглядываются. Команда сформирована. Дело началось.</p>
+        <p>Финальный кадр: доска с уликами. Красные нити. Фотографии. Цифры. И где-то в центре — пустое место. Главный организатор — пока без лица.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="shooting-days">
+    <div class="shooting-title">Съёмочные дни</div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 1</span><span class="day-name">КНБ в университете, официальная версия</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Кабинет ректора/актовый зал, коридоры</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Сотрудник КНБ (главный), ректор/декан, преподаватели, студенты (массовка)</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 2</span><span class="day-name">Деканы представляют лучших студентов</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Аудитория/кабинет, коридор (ожидание)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка, сотрудник КНБ, декан, 3-4 других студента</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 3</span><span class="day-name">Разговор героя с КНБ, вербовка</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Отдельный кабинет/пустая аудитория, коридор</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, сотрудник КНБ</div></div>
+        <div class="day-detail"><div class="day-detail-label">Заметки</div><div class="day-detail-text">Ключевая сцена сезона. Диалог напряжённый. Два умных человека, каждый просчитывает другого. Крупные планы.</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 4</span><span class="day-name">Знакомство героя и девушки, напряжение</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Университет (библиотека/компьютерный класс), кафе возле университета</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка</div></div>
+        <div class="day-detail"><div class="day-detail-label">Заметки</div><div class="day-detail-text">Контраст подходов через диалог. Каждый пытается «прочитать» другого.</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 5</span><span class="day-name">Получение первого дела, финал серии</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Секретный кабинет/штаб-квартира (возможно в университете)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка, сотрудник КНБ</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Доска с уликами/экран с данными, файлы дела, ноутбуки</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== СЕРИЯ 4: ТЁМНАЯ СЕТЬ ===== -->
+<section id="tab-ep4" class="episode-section">
+  <div class="ep-header">
+    <div class="ep-number">Серия 04 из 05</div>
+    <h2 class="ep-title">«Тёмная сеть»</h2>
+    <div class="ep-meta">
+      <div class="ep-meta-item"><div class="dot"></div>40 минут</div>
+      <div class="ep-meta-item"><div class="dot"></div>5 съёмочных дней</div>
+    </div>
+  </div>
+
+  <div class="ep-mission">
+    <div class="ep-mission-label">Задача серии</div>
+    <div class="ep-mission-text" data-editable>Самая динамичная серия сезона. Командная работа в действии: даркнет, фишинг, социальная инженерия, слежка, задержание. Каждый член команды раскрывается через свои методы. Конфликт превращается в уважение.</div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-block fade-in">
+      <div class="tl-time">00:00 — 10:00</div>
+      <div class="tl-phase">Завязка — «План операции»</div>
+      <div class="tl-content" data-editable>
+        <p>Штаб-квартира. Стена с уликами, фотографиями, схемами связей. Красные нити соединяют точки. Три человека за столом — герой, девушка, сотрудник КНБ.</p>
+        <p>Составляют план расследования. Перед ними — цепочка мошенников: фейковые аккаунты, фишинговые письма, схемы с чужими данными, продажа баз в даркнете. Всё завязано на данные студентов.</p>
+        <p>Распределение ролей: герой — техническая часть (даркнет, взломы, отслеживание), девушка — аналитика (социальные сети, ошибки людей, социальная инженерия), КНБ — оперативная работа (слежка, задержания, юридическое прикрытие).</p>
+        <p>Камера: трёхсторонний монтаж — лицо каждого крупным планом во время объяснения их роли. Они — машина. Каждый винтик на своём месте.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block fade-in">
+      <div class="tl-time">10:00 — 25:00</div>
+      <div class="tl-phase">Развитие — «Три фронта»</div>
+      <div class="tl-content" data-editable>
+        <p><strong>Фронт 1: Герой в даркнете.</strong> Тёмная комната. Экран с интерфейсом Tor-подобного браузера. Герой заходит под фейковым аккаунтом, ищет продавцов украденных баз. Находит форум. Вступает в контакт с посредником. Каждое слово — на вес золота. Одна ошибка — и прикрытие раскроется.</p>
+        <p><strong>Фронт 2: Девушка и социальная инженерия.</strong> Кафе. Она звонит подозреваемому, представляясь кем-то другим. Вытягивает информацию через соцсети: геолокации на фото, публичные данные, ошибки в настройках приватности. Где герой взламывает код — она взламывает людей.</p>
+        <p><strong>Фронт 3: КНБ на улицах.</strong> Слежка. Фургон с мониторами. Оперативники в штатском. Отслеживание передвижений подозреваемого.</p>
+        <p>Параллельный монтаж трёх линий. Команда работает как единый организм. И выходит на одного из посредников.</p>
+        <div class="scene-note">Визуально: быстрый кросс-монтаж трёх линий с нарастающим ритмом. Каждый «фронт» — свой цветовой фильтр: зелёный (даркнет), тёплый (соцсети), синий (улица).</div>
+      </div>
+    </div>
+
+    <div class="timeline-block red-block fade-in">
+      <div class="tl-time red">25:00 — 35:00</div>
+      <div class="tl-phase">Поворот — «Глубже, чем казалось»</div>
+      <div class="tl-content" data-editable>
+        <p>Посредника ловят. Допрос. Но открывается неприятная правда: это не отдельная группировка мошенников. За ними стоит кто-то внутри университета. Кто-то, кто имел доступ к серверам и помогал этим схемам работать.</p>
+        <p>Первый взлом героя случайно пересёкся с этой большой сетью. Он зашёл в дверь, которую кто-то другой держал открытой.</p>
+        <p>Между героем и девушкой — конфликт. Она чувствует, что он что-то скрывает. Его реакции слишком личные для человека, который «просто помогает». Прямой вопрос. Он уходит от ответа. Напряжение.</p>
+        <p>Но потом — момент уязвимости. Он признаёт (не словами, а действиями), что без неё не справится. Она понимает это и отступает. Пока.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block purple-block fade-in">
+      <div class="tl-time purple">35:00 — 40:00</div>
+      <div class="tl-phase">Клиффхэнгер — «Замкнутый круг»</div>
+      <div class="tl-content" data-editable>
+        <p>Команда анализирует всё, что получили от посредника. Нити ведут обратно. В университет. К серверу. К тому самому серверу, который взломал герой.</p>
+        <p>Камера медленно наезжает на доску с уликами. Красная нить тянется от посредника... через цепочку имён... и упирается в фото университетского корпуса.</p>
+        <p>Герой стоит перед доской. Его отражение — в стекле. Он знает больше, чем может сказать.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="shooting-days">
+    <div class="shooting-title">Съёмочные дни</div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 1</span><span class="day-name">Начало командной работы, план расследования</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Штаб-квартира/секретный кабинет</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Доска с фото/схемами/связями, компьютеры/мониторы, принтер, распечатки</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 2</span><span class="day-name">Герой под прикрытием в даркнете</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Квартира героя / штаб (за компьютером)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Компьютер с графикой даркнет-интерфейса, наушники, тёмная комната</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Графика интерфейса даркнета, чатов/форумов, нагнетающая музыка, крупные планы рук и лица</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 3</span><span class="day-name">Девушка: соцсети и социальная инженерия</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Штаб-квартира, кафе (девушка звонит подозреваемому)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Телефон, ноутбук, графика экранов соцсетей и профилей</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 4</span><span class="day-name">Поимка посредника, оперативная часть КНБ</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Улица/парковка (слежка), кафе/место встречи (задержание), машина КНБ (наблюдение), допросная</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка, сотрудник КНБ, посредник, 2-3 оперативника</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Рации/наушники, фургон с мониторами, наручники</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Динамичная камера, монтаж параллельных действий</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 5</span><span class="day-name">Обнаружение связи с университетом, конфликт и уважение</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Штаб-квартира</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Обновлённая доска с уликами, экраны с данными</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== СЕРИЯ 5: НУЛЕВОЙ СЛЕД ===== -->
+<section id="tab-ep5" class="episode-section">
+  <div class="ep-header">
+    <div class="ep-number">Серия 05 из 05 — Финал сезона</div>
+    <h2 class="ep-title">«Нулевой след»</h2>
+    <div class="ep-meta">
+      <div class="ep-meta-item"><div class="dot"></div>40 минут</div>
+      <div class="ep-meta-item"><div class="dot"></div>5 съёмочных дней</div>
+      <div class="ep-meta-item"><div class="dot" style="background:var(--red)"></div>Финал сезона</div>
+    </div>
+  </div>
+
+  <div class="ep-mission">
+    <div class="ep-mission-label">Задача серии</div>
+    <div class="ep-mission-text" data-editable>Финал первого сезона. Раскрытие части правды, финальная операция, осознание героем своей роли в этой игре. И сообщение, которое доказывает: игра не окончена. Всё только начинается.</div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-block fade-in">
+      <div class="tl-time">00:00 — 10:00</div>
+      <div class="tl-phase">Завязка — «Полная картина»</div>
+      <div class="tl-content" data-editable>
+        <p>Штаб-квартира. Большая доска с полной схемой сети: утечки, фишинг, даркнет, кража данных — всё это была часть одной системы. Красные нити, фотографии, логи, имена.</p>
+        <p>Команда собирает все кусочки пазла. Картина наконец складывается: внутри университета был человек (или доступ), через которого проходило всё. Сервер был узлом — точкой, через которую текли данные наружу.</p>
+        <p>Команда планирует финальную операцию — закрыть канал, поймать ключевых посредников, спасти данные от нового слива.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block fade-in">
+      <div class="tl-time">10:00 — 25:00</div>
+      <div class="tl-phase">Развитие — «Часть истории»</div>
+      <div class="tl-content" data-editable>
+        <p>Ночь. Герой один в штаб-квартире. Все ушли. Он сидит перед доской и думает.</p>
+        <p>И понимает страшное: его собственный взлом в серии 1 — не просто помог расследованию. Он сделал его частью этой истории. Его первый вход в сервер не был случайным «нахождением» — настоящий антагонист, возможно, заметил его в тот самый момент и наблюдал всё это время.</p>
+        <div class="scene-note danger">Флешбэки: серия 1 — серверная комната, первый вход, свет монитора на лице героя. Те же кадры, но теперь зритель видит их иначе — не как победу хакера, а как вход в ловушку.</div>
+        <p>Внутренний конфликт: рассказать команде или молчать? Если расскажет — потеряет доверие. Если промолчит — подвергнет всех опасности.</p>
+        <p>Команда собирается. Готовят финальную операцию. Герой молчит. Но его глаза говорят больше, чем слова.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block red-block fade-in">
+      <div class="tl-time red">25:00 — 35:00</div>
+      <div class="tl-phase">Поворот — «Финальная операция»</div>
+      <div class="tl-content" data-editable>
+        <p>Самая динамичная сцена сезона. Параллельный монтаж: штаб-квартира (командный центр) и место задержания (склад/офис/квартира).</p>
+        <p><strong>Герой</strong> — за компьютером. Взламывает защиту, отслеживает потоки данных, перенаправляет трафик. Его пальцы — как у пианиста. Каждая секунда на счету.</p>
+        <p><strong>КНБ</strong> — на месте. Оперативники в бронежилетах. Координация по рации. Вход. Задержание ключевого посредника.</p>
+        <p><strong>Девушка</strong> — координирует и анализирует в реальном времени. Направляет, предупреждает, считывает поведение подозреваемых.</p>
+        <p>Успех. Посредника берут. Канал утечки — раскрыт. Новые данные — спасены от слива. Часть мошеннической схемы — закрыта.</p>
+        <p>Но... главный организатор — уходит. Или остаётся в тени. Команда закрыла ветку, но не корень.</p>
+      </div>
+    </div>
+
+    <div class="timeline-block purple-block fade-in">
+      <div class="tl-time purple">35:00 — 40:00</div>
+      <div class="tl-phase">Клиффхэнгер — «Сообщение»</div>
+      <div class="tl-content" data-editable>
+        <p>Штаб-квартира. Команда расслабляется. Улыбки. Облегчение. Первая совместная победа. Девушка смеётся. КНБ-шник кивает с уважением. Они — команда.</p>
+        <p>Позже. Квартира героя. Ночь. Тишина. Герой сидит за компьютером. Усталый, но спокойный.</p>
+        <p>И тут — звук уведомления. На экране появляется анонимное сообщение:</p>
+        <div class="dialogue">
+          <div class="speaker">Анонимное сообщение</div>
+          «Ты нашёл дверь. Но не понимаешь, кто тебе позволил её открыть.»
+        </div>
+        <p>Лицо героя. Шок. Страх. Понимание. Игра не окончена. Она только начинается.</p>
+        <p>Камера отъезжает от его лица. Экран гаснет. Тишина.</p>
+        <p>Чёрный экран. Титры.</p>
+        <div class="scene-note danger">Финальный кадр — самый важный кадр сезона. Полная тишина перед сообщением. Затем — звук уведомления. Крупный план текста на экране. Крупный план лица героя. Музыка: нарастающее напряжение → обрыв → титры.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shooting-days">
+    <div class="shooting-title">Съёмочные дни</div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 1</span><span class="day-name">Выход на главный узел схемы</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Штаб-квартира</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Большая доска со всей схемой сети, компьютеры, распечатки, красные нити/маркеры (связи между уликами)</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 2</span><span class="day-name">Герой осознаёт свою роль в истории</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Квартира героя (ночь), штаб-квартира (один)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Флешбэки (кадры из серии 1 — серверная, первый вход), тревожная музыка, крупные планы</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 3</span><span class="day-name">Финальная операция, поимка посредника</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Командный центр (штаб), место задержания (склад/офис/квартира), улицы (погоня/слежка)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка, сотрудник КНБ, ключевой посредник, 3-5 оперативников, 1-2 охранника</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Тактическое снаряжение КНБ, рации, наушники, компьютеры командного центра, муляж оборудования</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Параллельный монтаж (штаб + место операции), динамичная камера, напряжённый саундтрек</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 4</span><span class="day-name">Раскрытие канала утечки, спасение данных</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Штаб-квартира, серверная университета (возвращение к началу)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Реквизит</div><div class="day-detail-text">Компьютеры, серверы, графика экрана со спасением данных</div></div>
+      </div>
+    </div>
+    <div class="day-card" onclick="this.classList.toggle('open')">
+      <div class="day-header"><div class="day-label"><span class="day-num">ДЕНЬ 5</span><span class="day-name">Анонимное сообщение, крючок на 2 сезон</span></div><div class="day-toggle">▼</div></div>
+      <div class="day-body">
+        <div class="day-detail"><div class="day-detail-label">Сцены</div><div class="day-detail-text">Команда празднует успех в штабе. Затем — герой дома, один. Анонимное сообщение. Шок на лице. Финальные титры.</div></div>
+        <div class="day-detail"><div class="day-detail-label">Локации</div><div class="day-detail-text">Квартира героя (ночь) — финальная сцена, штаб-квартира (команда расслабляется)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Актёры</div><div class="day-detail-text">Главный герой, девушка (сцена в штабе), сотрудник КНБ (сцена в штабе)</div></div>
+        <div class="day-detail"><div class="day-detail-label">Техтребования</div><div class="day-detail-text">Финальный кадр — самый важный в сезоне. Тишина → звук уведомления → крупный план текста на экране → крупный план лица → нарастающая музыка → обрыв → титры</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ГРАФ ПЕРСОНАЖЕЙ ===== -->
+<section id="tab-characters" class="episode-section">
+  <div class="section-title">Граф связей персонажей</div>
+
+  <div class="graph-container" id="graphBox">
+    <svg class="graph-canvas" id="graphSvg"></svg>
+
+    <!-- Hero -->
+    <div class="graph-node" id="node-hero" style="left:calc(50% - 70px);top:40px;">
+      <div class="graph-avatar g">🖥️</div>
+      <div class="graph-node-name">Главный герой</div>
+      <div class="graph-node-role">ХАКЕР</div>
+    </div>
+
+    <!-- Girl -->
+    <div class="graph-node" id="node-girl" style="left:calc(20% - 70px);top:220px;">
+      <div class="graph-avatar r">📊</div>
+      <div class="graph-node-name">Девушка</div>
+      <div class="graph-node-role">АНАЛИТИК</div>
+    </div>
+
+    <!-- KNB -->
+    <div class="graph-node" id="node-knb" style="left:calc(80% - 70px);top:220px;">
+      <div class="graph-avatar b">🛡️</div>
+      <div class="graph-node-name">Сотрудник КНБ</div>
+      <div class="graph-node-role">КУРАТОР</div>
+    </div>
+
+    <!-- Antagonist -->
+    <div class="graph-node" id="node-antag" style="left:calc(50% - 70px);top:400px;">
+      <div class="graph-avatar p">👤</div>
+      <div class="graph-node-name">Антагонист</div>
+      <div class="graph-node-role">В ТЕНИ</div>
+    </div>
+
+    <div class="graph-legend">
+      <div class="graph-legend-item"><div class="graph-legend-line" style="background:var(--accent)"></div>Команда / Доверие</div>
+      <div class="graph-legend-item"><div class="graph-legend-line" style="background:var(--yellow)"></div>Напряжение / Химия</div>
+      <div class="graph-legend-item"><div class="graph-legend-line" style="background:var(--red);border-style:dashed"></div>Наблюдение / Угроза</div>
+      <div class="graph-legend-item"><div class="graph-legend-line" style="background:var(--blue)"></div>Вербовка / Контроль</div>
+    </div>
+  </div>
+
+  <!-- Relationship details -->
+  <div class="section-title">Динамика отношений</div>
+  <div class="soundtrack-grid">
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--accent-glow)">🤝</div>
+        <div><div class="sound-title">Герой ↔ Девушка</div><div class="sound-subtitle">НАПРЯЖЕНИЕ → УВАЖЕНИЕ → ДОВЕРИЕ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Начинают как незнакомцы, замечают друг друга через взгляды (Серия 2). Первый разговор полон недоверия — он технарь, она психолог (Серия 3). Конфликт методов перерастает в уважение во время командной работы (Серия 4). К финалу — настоящая связь, но она подозревает его тайну.</div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--blue-glow)">🎯</div>
+        <div><div class="sound-title">КНБ → Герой</div><div class="sound-subtitle">НАБЛЮДЕНИЕ → ВЕРБОВКА → КОНТРОЛЬ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>КНБ замечает талант героя (Серия 3). Предлагает выбор: помогать или стать подозреваемым. Классическая вербовка — без давления, но без выбора. На протяжении сезона куратор остаётся загадкой: союзник или манипулятор? Знает больше, чем показывает.</div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--red-glow)">👁️</div>
+        <div><div class="sound-title">Антагонист → Герой</div><div class="sound-subtitle">НЕВИДИМОЕ НАБЛЮДЕНИЕ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Антагонист заметил героя в момент первого входа в серверную (Серия 1) и наблюдал всё это время. Герой не знал об этом до финала. Анонимное сообщение в Серии 5 раскрывает: всё это время за охотником охотились. Полная инверсия ролей.</div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--purple-glow)">⚡</div>
+        <div><div class="sound-title">Герой ↔ Сам с собой</div><div class="sound-subtitle">АЗАРТ → СТРАХ → ОСОЗНАНИЕ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Начинает как самоуверенный хакер, взламывающий «ради проверки» (Серия 1). Обнаруживает масштаб проблемы и пугается (Серия 2). Соглашается помогать КНБ от безысходности (Серия 3). К финалу осознаёт: он — не игрок, а фигура на чужой доске (Серия 5).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== КАРТА ЛОКАЦИЙ ===== -->
+<section id="tab-locations" class="episode-section">
+  <div class="section-title">Карта локаций</div>
+
+  <div class="map-container">
+    <div class="map-grid">
+      <div class="map-cell mc-green">
+        <div class="map-icon">🏛️</div>
+        <div class="map-name">Университет</div>
+        <div class="map-desc" data-editable>Корпус, аудитории, коридоры, деканат. Центральная арена — здесь начинается и закрывается сезон. Студенты, преподаватели, скрытые тайны за каждой дверью.</div>
+        <div class="map-episodes"><span class="map-ep-tag">С1</span><span class="map-ep-tag">С2</span><span class="map-ep-tag">С3</span><span class="map-ep-tag">С4</span><span class="map-ep-tag">С5</span></div>
+      </div>
+      <div class="map-cell mc-red">
+        <div class="map-icon">🖥️</div>
+        <div class="map-name">Серверная</div>
+        <div class="map-desc" data-editable>Тёмное сердце университета. Синевато-зелёный свет, гул вентиляторов. Место первого взлома и финальной операции. Символ — дверь, которую кто-то позволил открыть.</div>
+        <div class="map-episodes"><span class="map-ep-tag">С1</span><span class="map-ep-tag">С5</span></div>
+      </div>
+      <div class="map-cell mc-blue">
+        <div class="map-icon">🏠</div>
+        <div class="map-name">Квартира героя</div>
+        <div class="map-desc" data-editable>Маленькая, тёмная, освещённая только экраном. Убежище и лаборатория. Здесь герой работает, думает, боится и получает финальное сообщение, которое меняет всё.</div>
+        <div class="map-episodes"><span class="map-ep-tag">С1</span><span class="map-ep-tag">С2</span><span class="map-ep-tag">С5</span></div>
+      </div>
+      <div class="map-cell mc-purple">
+        <div class="map-icon">🕵️</div>
+        <div class="map-name">Штаб-квартира</div>
+        <div class="map-desc" data-editable>Секретный кабинет команды. Доска с уликами, красные нити, мониторы. Место, где план превращается в действие. Здесь рождается команда и раскрывается заговор.</div>
+        <div class="map-episodes"><span class="map-ep-tag">С3</span><span class="map-ep-tag">С4</span><span class="map-ep-tag">С5</span></div>
+      </div>
+      <div class="map-cell mc-yellow">
+        <div class="map-icon">🌃</div>
+        <div class="map-name">Улицы города</div>
+        <div class="map-desc" data-editable>Слежка, погони, оперативные встречи. Город — нейтральная территория, где каждый прохожий может быть наблюдателем. Чёрные машины КНБ, кафе, парковки.</div>
+        <div class="map-episodes"><span class="map-ep-tag">С1</span><span class="map-ep-tag">С4</span><span class="map-ep-tag">С5</span></div>
+      </div>
+      <div class="map-cell mc-green">
+        <div class="map-icon">🎯</div>
+        <div class="map-name">Места операций</div>
+        <div class="map-desc" data-editable>Склады, офисы, точки встреч посредников. Сюда приводят следы расследования. Задержания, допросы, неожиданные открытия. Каждое новое место — шаг ближе к истине.</div>
+        <div class="map-episodes"><span class="map-ep-tag">С4</span><span class="map-ep-tag">С5</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Atmosphere by location -->
+  <div class="section-title">Атмосфера локаций</div>
+  <div class="soundtrack-grid">
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--accent-glow)">💡</div>
+        <div><div class="sound-title">Университет — Дневной свет</div><div class="sound-subtitle">ТЁПЛЫЙ / ОБМАНЧИВО БЕЗОПАСНЫЙ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Солнечные коридоры, смех студентов, обычная жизнь. Но под поверхностью — напряжение. Камера замечает детали: камеры наблюдения, закрытые двери, тяжёлые взгляды преподавателей. Контраст между «нормальностью» и тем, что скрыто.</div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--red-glow)">🔴</div>
+        <div><div class="sound-title">Серверная — Цифровое сердце</div><div class="sound-subtitle">ХОЛОДНЫЙ / СИНИЙ / ОПАСНЫЙ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Синевато-зелёные LED, гул серверов, холодный воздух кондиционеров. Минимальное освещение. Звук — низкочастотный drone + пульс героя. Каждый кадр здесь — на крупных планах: руки, экран, глаза, USB-порт.</div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--blue-glow)">🌙</div>
+        <div><div class="sound-title">Квартира героя — Убежище</div><div class="sound-subtitle">ТЁМНЫЙ / ИНТИМНЫЙ / ТРЕВОЖНЫЙ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Единственный свет — экран монитора. Тени на стенах. Звуки города за окном приглушены. Пространство одиночества и гениальности. Здесь герой — настоящий: без масок, без притворства.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== САУНДТРЕК ===== -->
+<section id="tab-soundtrack" class="episode-section">
+  <div class="section-title">Музыка и саундтрек</div>
+
+  <!-- Musical themes per scene type -->
+  <div class="soundtrack-grid">
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--accent-glow)">🎹</div>
+        <div><div class="sound-title">Главная тема</div><div class="sound-subtitle">OPENING / ТИТРЫ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Электронный минимализм. Пульсирующий синтезатор, глитч-эффекты, нарастающий бит. Начинается тихо — как загрузка системы — и раскрывается в полноценный трек. Ассоциация: включение компьютера → вход в систему → точка невозврата.</div>
+      <div class="sound-bar" id="bar1"></div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--blue-glow)">🔍</div>
+        <div><div class="sound-title">Тема расследования</div><div class="sound-subtitle">INVESTIGATION / АНАЛИЗ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Тихий ambient с пульсирующими басами. Тиканье часов в ритме. Электронные текстуры, напоминающие сканирование данных. Используется в сценах анализа данных, работы за компьютером, построения схем.</div>
+      <div class="sound-bar" id="bar2"></div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--red-glow)">⚡</div>
+        <div><div class="sound-title">Тема напряжения</div><div class="sound-subtitle">TENSION / ОПАСНОСТЬ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Низкочастотный drone, нарастающий в интенсивности. Heartbeat-ритм. Дисторшн на синтезаторе. Используется перед поворотами, во время проникновений, в моменты «почти попался». Обрывается резко — в тишину.</div>
+      <div class="sound-bar" id="bar3"></div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--yellow-glow)">🎯</div>
+        <div><div class="sound-title">Тема операций</div><div class="sound-subtitle">ACTION / ДИНАМИКА</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Быстрый электронный бит, драм-н-бейс элементы, агрессивный синтезатор. Параллельный монтаж трёх линий (даркнет / соцсети / улица). Нарастает до кульминации при задержании. Самый энергичный трек сезона.</div>
+      <div class="sound-bar" id="bar4"></div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:var(--purple-glow)">🌙</div>
+        <div><div class="sound-title">Тема антагониста</div><div class="sound-subtitle">SHADOW / НЕВИДИМАЯ УГРОЗА</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Едва слышимый, потусторонний. Реверсированные звуки, искажённые голоса, белый шум. Появляется в моментах, когда зритель (но не герой) должен почувствовать: кто-то наблюдает. Полностью раскрывается только в финальной сцене сезона.</div>
+      <div class="sound-bar" id="bar5"></div>
+    </div>
+    <div class="sound-card">
+      <div class="sound-card-header">
+        <div class="sound-icon" style="background:rgba(255,255,255,0.05)">💔</div>
+        <div><div class="sound-title">Тема тишины</div><div class="sound-subtitle">SILENCE / КЛИФФХЭНГЕРЫ</div></div>
+      </div>
+      <div class="sound-desc" data-editable>Отсутствие музыки — как приём. Полная тишина перед ключевыми моментами: анонимное сообщение, приезд КНБ, взгляд на данные. Единственный звук — дыхание героя или звук уведомления. Тишина громче любого саундтрека.</div>
+      <div class="sound-bar" id="bar6"></div>
+    </div>
+  </div>
+
+  <!-- Character themes -->
+  <div class="section-title" style="margin-top:32px">Музыкальные темы персонажей</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:8px 24px;">
+    <div class="theme-row">
+      <div class="theme-char" style="background:var(--accent-glow)">🖥️</div>
+      <div class="theme-info">
+        <div class="theme-name">Тема героя — «Ghost»</div>
+        <div class="theme-desc" data-editable>Минималистичный электронный мотив. Чистый синтезатор, прозрачный, как код. Звучит при сценах за компьютером, взломах, моментах гениальности. Постепенно усложняется от серии к серии — как и сам герой.</div>
+      </div>
+      <div class="theme-mood">MINIMAL / CLEAN</div>
+    </div>
+    <div class="theme-row">
+      <div class="theme-char" style="background:var(--red-glow)">📊</div>
+      <div class="theme-info">
+        <div class="theme-name">Тема девушки — «Profile»</div>
+        <div class="theme-desc" data-editable>Тёплый, но настороженный мотив. Акустическая гитара, обработанная электроникой. Человечнее, чем тема героя — потому что она работает с людьми, а не с кодом. Появляется в сценах социальной инженерии и моментах между ними.</div>
+      </div>
+      <div class="theme-mood">WARM / GUARDED</div>
+    </div>
+    <div class="theme-row">
+      <div class="theme-char" style="background:var(--blue-glow)">🛡️</div>
+      <div class="theme-info">
+        <div class="theme-name">Тема КНБ — «Authority»</div>
+        <div class="theme-desc" data-editable>Тяжёлый, уверенный ритм. Низкие струнные + электронный бит. Ощущение силы и контроля. Звучит при появлении сотрудника, сценах вербовки, операциях. Иногда сливается с темой героя — когда они работают вместе.</div>
+      </div>
+      <div class="theme-mood">HEAVY / CONTROLLED</div>
+    </div>
+    <div class="theme-row">
+      <div class="theme-char" style="background:var(--purple-glow)">👤</div>
+      <div class="theme-info">
+        <div class="theme-name">Тема антагониста — «Zero»</div>
+        <div class="theme-desc" data-editable>Почти отсутствует. Единственный узнаваемый элемент — искажённый звуковой сигнал (как звук уведомления). Появляется 2-3 раза за весь сезон, и только в моменты, когда «кто-то наблюдает». Зритель начнёт бояться этого звука.</div>
+      </div>
+      <div class="theme-mood">ABSENT / EERIE</div>
+    </div>
+  </div>
+
+  <!-- Episode-by-episode soundtrack map -->
+  <div class="section-title" style="margin-top:48px">Звуковая карта сезона</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;">
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:2px;font-size:0.85rem;">
+      <div style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.75rem;padding:12px;letter-spacing:1px;">СЕРИЯ 1</div>
+      <div style="display:flex;height:48px;border-radius:6px;overflow:hidden;">
+        <div style="flex:10;background:rgba(0,255,136,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Тишина + город</div>
+        <div style="flex:15;background:rgba(51,136,255,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Investigation</div>
+        <div style="flex:10;background:rgba(255,51,85,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Tension + heartbeat</div>
+        <div style="flex:5;background:rgba(170,85,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Обрыв</div>
+      </div>
+
+      <div style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.75rem;padding:12px;letter-spacing:1px;">СЕРИЯ 2</div>
+      <div style="display:flex;height:48px;border-radius:6px;overflow:hidden;">
+        <div style="flex:10;background:rgba(0,255,136,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Ghost тема</div>
+        <div style="flex:15;background:rgba(51,136,255,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Investigation + тревога</div>
+        <div style="flex:10;background:rgba(255,204,0,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Profile (встреча)</div>
+        <div style="flex:5;background:rgba(255,51,85,0.2);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Authority</div>
+      </div>
+
+      <div style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.75rem;padding:12px;letter-spacing:1px;">СЕРИЯ 3</div>
+      <div style="display:flex;height:48px;border-radius:6px;overflow:hidden;">
+        <div style="flex:10;background:rgba(51,136,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Authority</div>
+        <div style="flex:15;background:rgba(255,51,85,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Tension (вербовка)</div>
+        <div style="flex:10;background:rgba(255,204,0,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Ghost + Profile</div>
+        <div style="flex:5;background:rgba(0,255,136,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Команда</div>
+      </div>
+
+      <div style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.75rem;padding:12px;letter-spacing:1px;">СЕРИЯ 4</div>
+      <div style="display:flex;height:48px;border-radius:6px;overflow:hidden;">
+        <div style="flex:10;background:rgba(0,255,136,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Investigation</div>
+        <div style="flex:15;background:rgba(255,204,0,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Action (3 фронта)</div>
+        <div style="flex:10;background:rgba(255,51,85,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Tension (допрос)</div>
+        <div style="flex:5;background:rgba(170,85,255,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Zero?</div>
+      </div>
+
+      <div style="font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.75rem;padding:12px;letter-spacing:1px;">СЕРИЯ 5</div>
+      <div style="display:flex;height:48px;border-radius:6px;overflow:hidden;">
+        <div style="flex:10;background:rgba(0,255,136,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Все темы</div>
+        <div style="flex:15;background:rgba(170,85,255,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Ghost + Zero (флешбэки)</div>
+        <div style="flex:10;background:rgba(255,204,0,0.2);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--text-dim);">Action (финал)</div>
+        <div style="flex:5;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--red);">ТИШИНА</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ТРЕКЕР СЪЁМОК v2 ===== -->
+<section id="tab-tracker" class="episode-section">
+  <div class="section-title">Трекер съёмок — Сезон 1</div>
+
+  <div class="tracker-container" id="trackerRoot">
+    <!-- Stats cards -->
+    <div class="tracker-top">
+      <div class="tracker-stat-card"><div class="tracker-stat-val green" id="tsDone">0</div><div class="tracker-stat-label">Снято</div></div>
+      <div class="tracker-stat-card"><div class="tracker-stat-val yellow" id="tsFilming">0</div><div class="tracker-stat-label">В процессе</div></div>
+      <div class="tracker-stat-card"><div class="tracker-stat-val blue" id="tsPlanned">25</div><div class="tracker-stat-label">Запланировано</div></div>
+      <div class="tracker-stat-card"><div class="tracker-stat-val dim" id="tsPostponed">0</div><div class="tracker-stat-label">Отложено</div></div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="tracker-progress-bar"><div class="tracker-progress-fill" id="trackerFill"></div></div>
+    <div class="tracker-progress-text">
+      <span>Прогресс: <span class="tracker-pct" id="trackerPct">0%</span></span>
+      <span id="trackerCount">0 / 25 дней завершено</span>
+    </div>
+
+    <!-- Legend -->
+    <div class="tracker-legend">
+      <div class="tracker-legend-item active" onclick="filterTracker('all',this)"><div class="tracker-legend-dot" style="background:var(--text-dim)"></div>Все</div>
+      <div class="tracker-legend-item" onclick="filterTracker('planned',this)"><div class="tracker-legend-dot" style="background:var(--border)"></div>Запланировано</div>
+      <div class="tracker-legend-item" onclick="filterTracker('filming',this)"><div class="tracker-legend-dot" style="background:var(--yellow)"></div>Съёмка</div>
+      <div class="tracker-legend-item" onclick="filterTracker('done',this)"><div class="tracker-legend-dot" style="background:var(--accent)"></div>Снято</div>
+      <div class="tracker-legend-item" onclick="filterTracker('postponed',this)"><div class="tracker-legend-dot" style="background:var(--red)"></div>Отложено</div>
+    </div>
+
+    <div id="trackerEpisodes"></div>
+  </div>
+</section>
+
+</div>
+</div><!-- /mainContent -->
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">GHOST LOGIN</div>
+    <div class="footer-sub">Сезон 1 — 5 серий — 25 съёмочных дней</div>
+    <div class="footer-sub" style="margin-top:8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.75rem;">
+      «Ты нашёл дверь. Но не понимаешь, кто тебе позволил её открыть.»
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== FIREBASE INIT =====
+firebase.initializeApp({
+  apiKey: "AIzaSyBqWMZyJX5Cf2lrzbLAkMRsWtxwdjWNajY",
+  authDomain: "bibonappx.firebaseapp.com",
+  projectId: "bibonappx",
+  storageBucket: "bibonappx.firebasestorage.app",
+  messagingSenderId: "356833015902",
+  appId: "1:356833015902:web:75a43f8a33f24f25a11ccf"
+});
+const auth = firebase.auth();
+const db = firebase.firestore();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+let currentUser = null;
+let saveTimeout = null;
+
+// ===== GOOGLE AUTH =====
+function signInWithGoogle() {
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authLoading').style.display = 'block';
+  auth.signInWithPopup(googleProvider).catch(err => {
+    document.getElementById('authLoading').style.display = 'none';
+    document.getElementById('authError').style.display = 'block';
+    document.getElementById('authError').textContent = 'Ошибка: ' + err.message;
+  });
+}
+
+function logOut() {
+  auth.signOut();
+}
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('userBar').style.display = 'flex';
+    document.getElementById('editToggle').style.display = '';
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    document.getElementById('userName').textContent = user.displayName || user.email;
+    loadAllFromFirestore();
+  } else {
+    currentUser = null;
+    document.getElementById('authOverlay').classList.remove('hidden');
+    document.getElementById('userBar').style.display = 'none';
+    document.getElementById('editToggle').style.display = 'none';
+  }
+});
+
+// ===== TABS =====
+function showTab(tabId) {
+  // Hide all sections
+  document.querySelectorAll('.episode-section').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
+  // Show target
+  const target = document.getElementById('tab-' + tabId);
+  if (target) {
+    target.classList.add('active');
+    target.querySelectorAll('.fade-in').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+  // Update series slider buttons
+  const epTabs = ['ep1','ep2','ep3','ep4','ep5'];
+  document.querySelectorAll('.series-slide-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', epTabs[i] === tabId);
+  });
+  // Update about button
+  const aboutBtn = document.getElementById('aboutBtn');
+  if (aboutBtn) aboutBtn.classList.toggle('active', tabId === 'overview');
+  // Update extra nav buttons
+  const extraMap = {'tracker':0, 'characters':1, 'locations':2, 'soundtrack':3};
+  document.querySelectorAll('.extra-nav-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', Object.keys(extraMap).find(k => extraMap[k] === i) === tabId);
+  });
+  if (tabId === 'characters') setTimeout(drawGraph, 100);
+  document.getElementById('nav').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== SLIDER =====
+function slideLeft() {
+  const track = document.getElementById('sliderTrack');
+  if (track) track.scrollBy({ left: -200, behavior: 'smooth' });
+}
+function slideRight() {
+  const track = document.getElementById('sliderTrack');
+  if (track) track.scrollBy({ left: 200, behavior: 'smooth' });
+}
+function scrollToHero() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== EDIT MODE =====
+let editMode = false;
+
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  const btn = document.getElementById('editToggle');
+  btn.classList.toggle('editing', editMode);
+  btn.textContent = editMode ? '✓ СОХРАНИТЬ' : 'РЕДАКТИРОВАТЬ';
+
+  document.querySelectorAll('[data-editable]').forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+  });
+
+  if (!editMode) {
+    // Save all editable content to Firestore
+    saveContentToFirestore();
+  }
+}
+
+function showToast(text) {
+  const t = document.getElementById('saveToast');
+  t.textContent = text || '✓ СОХРАНЕНО';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== FIRESTORE: CONTENT =====
+function saveContentToFirestore() {
+  if (!currentUser) return;
+  const data = {};
+  document.querySelectorAll('[data-editable]').forEach((el, i) => {
+    data['block_' + i] = el.innerHTML;
+  });
+  db.collection('ghostlogin').doc('content_' + currentUser.uid).set(data, { merge: true })
+    .then(() => showToast('✓ СОХРАНЕНО'))
+    .catch(e => showToast('✕ ОШИБКА'));
+}
+
+function loadContentFromFirestore() {
+  if (!currentUser) return;
+  db.collection('ghostlogin').doc('content_' + currentUser.uid).get().then(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      document.querySelectorAll('[data-editable]').forEach((el, i) => {
+        if (data['block_' + i]) el.innerHTML = data['block_' + i];
+      });
+    }
+  });
+}
+
+// ===== FIRESTORE: TRACKER =====
+function saveTrackerState() {
+  if (!currentUser) return;
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    db.collection('ghostlogin').doc('tracker_' + currentUser.uid).set(trackerData, { merge: false })
+      .then(() => showToast('✓ ТРЕКЕР СОХРАНЁН'))
+      .catch(() => {});
+  }, 800);
+}
+
+function loadTrackerFromFirestore() {
+  if (!currentUser) return;
+  return db.collection('ghostlogin').doc('tracker_' + currentUser.uid).get().then(doc => {
+    if (doc.exists) trackerData = doc.data();
+  });
+}
+
+function loadAllFromFirestore() {
+  buildTracker();
+  Promise.all([
+    loadTrackerFromFirestore()
+  ]).then(() => {
+    applyTrackerState();
+    updateTracker();
+    loadContentFromFirestore();
+  });
+}
+
+function applyTrackerState() {
+  document.querySelectorAll('.tracker-day-row').forEach(row => {
+    const id = row.dataset.dayId;
+    if (trackerData[id]) {
+      row.dataset.status = trackerData[id].status || 'planned';
+      row.querySelector('.tracker-status-btn').textContent = STATUS_ICONS[row.dataset.status];
+      row.querySelector('.tracker-day-status-label').textContent = STATUS_LABELS[row.dataset.status];
+    }
+    const noteInput = row.nextElementSibling?.querySelector?.('.tracker-note-input');
+    if (noteInput && trackerData[id]?.note) {
+      noteInput.value = trackerData[id].note;
+      row.querySelector('.tracker-note-btn').classList.add('has-note');
+    }
+  });
+}
+
+// ===== DOMContentLoaded =====
+document.addEventListener('DOMContentLoaded', () => {
+  // Typing effect
+  const subtitle = document.querySelector('.hero-subtitle');
+  const text = subtitle.textContent;
+  subtitle.textContent = '';
+  let i = 0;
+  const typeInterval = setInterval(() => {
+    if (i < text.length) { subtitle.textContent += text[i]; i++; }
+    else clearInterval(typeInterval);
+  }, 80);
+
+  // Sound bars
+  document.querySelectorAll('.sound-bar').forEach(bar => {
+    for (let j = 0; j < 40; j++) {
+      const line = document.createElement('div');
+      line.className = 'sound-bar-line';
+      line.style.height = (Math.random() * 16 + 4) + 'px';
+      line.style.animationDelay = (Math.random() * 2) + 's';
+      line.style.animationDuration = (Math.random() * 1.5 + 0.8) + 's';
+      const colors = ['var(--accent)','var(--blue)','var(--red)','var(--purple)','var(--yellow)'];
+      line.style.background = colors[Math.floor(Math.random() * colors.length)];
+      bar.appendChild(line);
+    }
+  });
+
+  // Auto-save on edit blur
+  document.addEventListener('focusout', e => {
+    if (editMode && e.target.closest('[data-editable]')) {
+      saveContentToFirestore();
+    }
+  });
+});
+
+// ===== GRAPH =====
+function drawGraph() {
+  const svg = document.getElementById('graphSvg');
+  const box = document.getElementById('graphBox');
+  if (!svg || !box) return;
+  const w = box.offsetWidth, h = box.offsetHeight;
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  svg.innerHTML = '';
+  const nodes = { hero:{x:w*0.5,y:76}, girl:{x:w*0.2,y:256}, knb:{x:w*0.8,y:256}, antag:{x:w*0.5,y:436} };
+  function drawLine(from, to, color, dashed, label) {
+    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',from.x); l.setAttribute('y1',from.y);
+    l.setAttribute('x2',to.x); l.setAttribute('y2',to.y);
+    l.setAttribute('stroke',color); l.setAttribute('stroke-width','2'); l.setAttribute('opacity','0.6');
+    if (dashed) l.setAttribute('stroke-dasharray','8,6');
+    svg.appendChild(l);
+    if (label) {
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',(from.x+to.x)/2); t.setAttribute('y',(from.y+to.y)/2-8);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('fill',color);
+      t.setAttribute('font-size','11'); t.setAttribute('font-family','JetBrains Mono,monospace');
+      t.setAttribute('opacity','0.8'); t.textContent = label; svg.appendChild(t);
+    }
+  }
+  drawLine(nodes.hero,nodes.girl,'#ffcc00',false,'Напряжение → Доверие');
+  drawLine(nodes.hero,nodes.knb,'#3388ff',false,'Вербовка');
+  drawLine(nodes.girl,nodes.knb,'#00ff88',false,'Команда');
+  drawLine(nodes.antag,nodes.hero,'#ff3355',true,'Наблюдение');
+  drawLine(nodes.antag,nodes.girl,'#aa55ff',true,'?');
+  drawLine(nodes.antag,nodes.knb,'#aa55ff',true,'?');
+}
+
+// ===== TRACKER v2 =====
+const STATUSES = ['planned','filming','done','postponed'];
+const STATUS_ICONS = { planned:'', filming:'▶', done:'✓', postponed:'✕' };
+const STATUS_LABELS = { planned:'ЗАПЛАНИРОВАНО', filming:'СЪЁМКА', done:'СНЯТО', postponed:'ОТЛОЖЕНО' };
+
+const EPISODES = [
+  {id:'ep1',badge:'С01',name:'Новый доступ',days:[
+    {id:'d1',num:'День 1',name:'Приезд героя, знакомство с городом',loc:'Вокзал, город, квартира'},
+    {id:'d2',num:'День 2',name:'Университет, первый день, наблюдение',loc:'Университет'},
+    {id:'d3',num:'День 3',name:'Изучение корпуса, компьютерные классы',loc:'Университет, серверная'},
+    {id:'d4',num:'День 4',name:'Проникновение в серверную, бэкдор',loc:'Серверная (ночь)'},
+    {id:'d5',num:'День 5',name:'Удалённое подключение, финал серии',loc:'Квартира героя'}]},
+  {id:'ep2',badge:'С02',name:'Слепая зона',days:[
+    {id:'d6',num:'День 6',name:'Герой изучает украденные данные',loc:'Квартира героя'},
+    {id:'d7',num:'День 7',name:'Обнаружение скрытых архивов',loc:'Квартира героя'},
+    {id:'d8',num:'День 8',name:'Университет, разговоры о безопасности',loc:'Университет'},
+    {id:'d9',num:'День 9',name:'Первая встреча с девушкой',loc:'Университет'},
+    {id:'d10',num:'День 10',name:'Приезд КНБ, клиффхэнгер',loc:'Университет'}]},
+  {id:'ep3',badge:'С03',name:'Отбор',days:[
+    {id:'d11',num:'День 11',name:'КНБ в университете, официальная версия',loc:'Кабинет ректора'},
+    {id:'d12',num:'День 12',name:'Деканы представляют лучших студентов',loc:'Аудитория'},
+    {id:'d13',num:'День 13',name:'Разговор героя с КНБ, вербовка',loc:'Отдельный кабинет'},
+    {id:'d14',num:'День 14',name:'Знакомство героя и девушки',loc:'Библиотека, кафе'},
+    {id:'d15',num:'День 15',name:'Получение первого дела, финал',loc:'Штаб-квартира'}]},
+  {id:'ep4',badge:'С04',name:'Тёмная сеть',days:[
+    {id:'d16',num:'День 16',name:'Начало командной работы',loc:'Штаб-квартира'},
+    {id:'d17',num:'День 17',name:'Герой под прикрытием в даркнете',loc:'Квартира / штаб'},
+    {id:'d18',num:'День 18',name:'Девушка: соцсети и соц. инженерия',loc:'Штаб, кафе'},
+    {id:'d19',num:'День 19',name:'Поимка посредника, операция КНБ',loc:'Улица, кафе, допросная'},
+    {id:'d20',num:'День 20',name:'Обнаружение связи с университетом',loc:'Штаб-квартира'}]},
+  {id:'ep5',badge:'С05',name:'Нулевой след',days:[
+    {id:'d21',num:'День 21',name:'Выход на главный узел схемы',loc:'Штаб-квартира'},
+    {id:'d22',num:'День 22',name:'Герой осознаёт свою роль',loc:'Квартира (ночь)'},
+    {id:'d23',num:'День 23',name:'Финальная операция, поимка',loc:'Штаб + склад'},
+    {id:'d24',num:'День 24',name:'Раскрытие канала утечки',loc:'Штаб, серверная'},
+    {id:'d25',num:'День 25',name:'Анонимное сообщение, крючок',loc:'Квартира (ночь)'}]}
+];
+
+let trackerData = {};
+let currentFilter = 'all';
+
+function buildTracker() {
+  const container = document.getElementById('trackerEpisodes');
+  if (!container) return;
+  let html = '';
+  EPISODES.forEach(ep => {
+    html += `<div class="tracker-ep" id="trk-${ep.id}">
+      <div class="tracker-ep-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="tracker-ep-left"><span class="tracker-ep-badge">${ep.badge}</span><span class="tracker-ep-name">${ep.name}</span></div>
+        <div class="tracker-ep-right">
+          <div class="tracker-ep-mini-bar"><div class="tracker-ep-mini-fill" id="minifill-${ep.id}"></div></div>
+          <div class="tracker-ep-count" id="cnt-${ep.id}">0/5</div>
+          <div class="tracker-ep-toggle">▼</div>
+        </div>
+      </div><div class="tracker-ep-body">`;
+    ep.days.forEach(day => {
+      html += `<div class="tracker-day-row" data-day-id="${day.id}" data-status="planned" data-ep="${ep.id}">
+          <div class="tracker-status-btn" onclick="event.stopPropagation();cycleStatus('${day.id}')"></div>
+          <div class="tracker-day-num">${day.num}</div>
+          <div class="tracker-day-info"><div class="tracker-day-name">${day.name}</div>
+            <div class="tracker-day-meta"><span class="tracker-day-status-label">ЗАПЛАНИРОВАНО</span><span style="opacity:0.5">${day.loc}</span></div>
+          </div>
+          <button class="tracker-note-btn" onclick="event.stopPropagation();toggleNote('${day.id}')" title="Заметка">📝</button>
+        </div>
+        <div class="tracker-note-row" id="note-${day.id}">
+          <textarea class="tracker-note-input" placeholder="Заметка к дню съёмки..." oninput="saveNote('${day.id}',this.value)" onclick="event.stopPropagation()"></textarea>
+        </div>`;
+    });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+function cycleStatus(dayId) {
+  const row = document.querySelector(`[data-day-id="${dayId}"]`);
+  if (!row) return;
+  const next = STATUSES[(STATUSES.indexOf(row.dataset.status) + 1) % STATUSES.length];
+  row.dataset.status = next;
+  row.querySelector('.tracker-status-btn').textContent = STATUS_ICONS[next];
+  row.querySelector('.tracker-day-status-label').textContent = STATUS_LABELS[next];
+  if (!trackerData[dayId]) trackerData[dayId] = {};
+  trackerData[dayId].status = next;
+  saveTrackerState();
+  updateTracker();
+}
+
+function toggleNote(dayId) {
+  const nr = document.getElementById('note-' + dayId);
+  if (!nr) return;
+  nr.classList.toggle('visible');
+  if (nr.classList.contains('visible')) nr.querySelector('.tracker-note-input').focus();
+}
+
+function saveNote(dayId, val) {
+  if (!trackerData[dayId]) trackerData[dayId] = {};
+  trackerData[dayId].note = val;
+  const row = document.querySelector(`[data-day-id="${dayId}"]`);
+  if (row) row.querySelector('.tracker-note-btn').classList.toggle('has-note', val.trim().length > 0);
+  saveTrackerState();
+}
+
+function filterTracker(status, el) {
+  currentFilter = status;
+  document.querySelectorAll('.tracker-legend-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.tracker-day-row').forEach(row => {
+    const nr = document.getElementById('note-' + row.dataset.dayId);
+    const show = status === 'all' || row.dataset.status === status;
+    row.style.display = show ? '' : 'none';
+    if (nr) nr.style.display = (show && nr.classList.contains('visible')) ? '' : 'none';
+  });
+}
+
+function updateTracker() {
+  const rows = document.querySelectorAll('.tracker-day-row');
+  let done=0, filming=0, planned=0, postponed=0;
+  rows.forEach(r => { const s=r.dataset.status; if(s==='done')done++; else if(s==='filming')filming++; else if(s==='postponed')postponed++; else planned++; });
+  const total = rows.length, pct = total ? Math.round((done/total)*100) : 0;
+  const el = id => document.getElementById(id);
+  if(el('tsDone'))el('tsDone').textContent=done;
+  if(el('tsFilming'))el('tsFilming').textContent=filming;
+  if(el('tsPlanned'))el('tsPlanned').textContent=planned;
+  if(el('tsPostponed'))el('tsPostponed').textContent=postponed;
+  if(el('trackerFill'))el('trackerFill').style.width=pct+'%';
+  if(el('trackerPct'))el('trackerPct').textContent=pct+'%';
+  if(el('trackerCount'))el('trackerCount').textContent=done+' / '+total+' дней завершено';
+  EPISODES.forEach(ep => {
+    const epRows = document.querySelectorAll(`[data-ep="${ep.id}"]`);
+    let epDone=0; epRows.forEach(r => { if(r.dataset.status==='done')epDone++; });
+    const cnt=el('cnt-'+ep.id), fill=el('minifill-'+ep.id), epEl=document.getElementById('trk-'+ep.id);
+    if(cnt)cnt.textContent=epDone+'/'+epRows.length;
+    if(fill)fill.style.width=(epRows.length?(epDone/epRows.length*100):0)+'%';
+    if(epEl)epEl.classList.toggle('ep-complete',epDone===epRows.length&&epRows.length>0);
+  });
+  filterTracker(currentFilter, document.querySelector('.tracker-legend-item.active'));
+}
+</script>
+
+</body>
+</html>

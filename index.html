@@ -2472,12 +2472,10 @@ auth.onAuthStateChanged(user => {
 
 // ===== TABS =====
 function showTab(tabId) {
-  // Hide all sections
   document.querySelectorAll('.episode-section').forEach(s => {
     s.classList.remove('active');
     s.style.display = '';
   });
-  // Show target
   const target = document.getElementById('tab-' + tabId);
   if (target) {
     target.classList.add('active');
@@ -2487,33 +2485,11 @@ function showTab(tabId) {
       el.style.animation = '';
     });
   }
-  // Update series slider buttons
-  const epTabs = ['ep1','ep2','ep3','ep4','ep5'];
-  document.querySelectorAll('.series-slide-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', epTabs[i] === tabId);
-  });
-  // Update about button
-  const aboutBtn = document.getElementById('aboutBtn');
-  if (aboutBtn) aboutBtn.classList.toggle('active', tabId === 'overview');
-  // Update extra nav buttons
-  const extraMap = {'tracker':0, 'characters':1, 'locations':2, 'soundtrack':3};
-  document.querySelectorAll('.extra-nav-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', Object.keys(extraMap).find(k => extraMap[k] === i) === tabId);
+  // Update nav tabs
+  document.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabId);
   });
   if (tabId === 'characters') setTimeout(drawGraph, 100);
-  document.getElementById('nav').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ===== SLIDER =====
-function slideLeft() {
-  const track = document.getElementById('sliderTrack');
-  if (track) track.scrollBy({ left: -200, behavior: 'smooth' });
-}
-function slideRight() {
-  const track = document.getElementById('sliderTrack');
-  if (track) track.scrollBy({ left: 200, behavior: 'smooth' });
-}
-function scrollToHero() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -2525,7 +2501,6 @@ function toggleMobileMenu() {
   btn.classList.toggle('open');
   document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
 }
-
 function mobileNav(tabId) {
   toggleMobileMenu();
   showTab(tabId);
@@ -2539,7 +2514,7 @@ function toggleEditMode() {
   document.body.classList.toggle('edit-mode', editMode);
   const btn = document.getElementById('editToggle');
   btn.classList.toggle('editing', editMode);
-  btn.textContent = editMode ? '✓ СОХРАНИТЬ' : 'РЕДАКТИРОВАТЬ';
+  btn.textContent = editMode ? '✓' : '✏️';
 
   document.querySelectorAll('[data-editable]').forEach(el => {
     el.contentEditable = editMode ? 'true' : 'false';
@@ -2629,16 +2604,6 @@ function applyTrackerState() {
 
 // ===== DOMContentLoaded =====
 document.addEventListener('DOMContentLoaded', () => {
-  // Typing effect
-  const subtitle = document.querySelector('.hero-subtitle');
-  const text = subtitle.textContent;
-  subtitle.textContent = '';
-  let i = 0;
-  const typeInterval = setInterval(() => {
-    if (i < text.length) { subtitle.textContent += text[i]; i++; }
-    else clearInterval(typeInterval);
-  }, 80);
-
   // Sound bars
   document.querySelectorAll('.sound-bar').forEach(bar => {
     for (let j = 0; j < 40; j++) {
